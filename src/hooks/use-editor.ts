@@ -74,8 +74,9 @@ const buildEditor = ({
     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
     const dataUrl = canvas.toDataURL(options);
 
-    downloadFile(dataUrl, "png");
+    // downloadFile(dataUrl, "png");
     autoZoom();
+    return dataUrl;
   };
 
   const saveSvg = () => {
@@ -84,8 +85,9 @@ const buildEditor = ({
     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
     const dataUrl = canvas.toDataURL(options);
 
-    downloadFile(dataUrl, "svg");
+    // downloadFile(dataUrl, "svg");
     autoZoom();
+    return dataUrl;
   };
 
   const saveJpg = () => {
@@ -94,8 +96,9 @@ const buildEditor = ({
     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
     const dataUrl = canvas.toDataURL(options);
 
-    downloadFile(dataUrl, "jpg");
+    // downloadFile(dataUrl, "jpg");
     autoZoom();
+    return dataUrl;
   };
 
   const saveJson = async () => {

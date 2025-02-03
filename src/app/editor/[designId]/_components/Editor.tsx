@@ -3,7 +3,6 @@
 import React, { useCallback, useRef, useState, useEffect } from "react";
 import { fabric } from "fabric";
 import { Design } from "@/types";
-import { Navbar } from "./Navbar";
 import { useEditor } from "@/hooks/use-editor";
 import { Sidebar } from "@/features/designs/components/sidebar";
 import { ShapeSidebar } from "@/features/designs/components/shape-sidebar";
@@ -27,6 +26,7 @@ import { ActiveTool, selectionDependentTools } from "@/features/designs/types";
 import debounce from "lodash.debounce";
 import { useUpdateDesign } from "@/features/designs/api/use-update-design";
 import { Page } from "./Page";
+import { Navbar } from "@/features/designs/components/navbar";
 
 interface EditorProps {
   initialData: Design;
@@ -259,7 +259,11 @@ const Editor = ({ initialData }: EditorProps) => {
 
   return (
     <div className="flex h-full flex-col">
-      <Navbar />
+      <Navbar
+        id={initialData.id}
+        activeTool={activeTool}
+        onChangeActiveTool={onChangeActiveTool}
+      />
       <div className="absolute top-[68px] flex h-[calc(100%-68px)] w-full">
         <Sidebar
           activeTool={activeTool}

@@ -12,6 +12,8 @@ import {
   Redo2,
   Undo2,
 } from "lucide-react";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 import { UserButton } from "@/features/auth/components/user-button";
 
@@ -28,23 +30,19 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useEditorsStore } from "../stores/use-editors-store";
 
 interface NavbarProps {
   id: string;
-  editor: Editor | undefined;
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
 }
 
-export const Navbar = ({
-  id,
-  editor,
-  activeTool,
-  onChangeActiveTool,
-}: NavbarProps) => {
+export const Navbar = ({ id, activeTool, onChangeActiveTool }: NavbarProps) => {
+  const editor = useEditorsStore((state) => state.getCurrentEditor());
   const data = useMutationState({
     filters: {
-      mutationKey: ["project", { id }],
+      mutationKey: ["design", { id }],
       exact: true,
     },
     select: (mutation) => mutation.state.status,
@@ -69,11 +67,40 @@ export const Navbar = ({
     },
   });
 
+  const editors = useEditorsStore((state) => state.editors);
+
+  const handleExportAllPages = async (format: "png" | "jpg" | "svg") => {
+    const zip = new JSZip();
+    const exportPromises = Object.entries(editors).map(
+      async ([pageIndex, editor]) => {
+        if (!editor) return;
+
+        const dataUrl =
+          format === "svg"
+            ? editor.saveSvg()
+            : format === "jpg"
+              ? editor.saveJpg()
+              : editor.savePng();
+
+        if (!dataUrl) return;
+
+        // Convert data URL to blob
+        const response = await fetch(dataUrl);
+        const blob = await response.blob();
+        zip.file(`page-${Number(pageIndex) + 1}.${format}`, blob);
+      },
+    );
+
+    await Promise.all(exportPromises);
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    saveAs(zipBlob, `design-${id}.zip`);
+  };
+
   return (
     <nav className="flex h-[68px] w-full items-center gap-x-8 border-b p-4 lg:pl-[34px]">
       <Logo />
       <div className="flex h-full w-full items-center gap-x-1">
-        <DropdownMenu modal={false}>
+        {/* <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="ghost">
               File
@@ -94,7 +121,7 @@ export const Navbar = ({
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
         <Separator orientation="vertical" className="mx-2" />
         <Hint label="Select" side="bottom" sideOffset={10}>
           <Button
@@ -168,13 +195,13 @@ export const Navbar = ({
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="flex items-center gap-x-2"
-                onClick={() => editor?.savePng()}
+                onClick={() => handleExportAllPages("png")}
               >
                 <CiFileOn className="size-8" />
                 <div>
                   <p>PNG</p>
                   <p className="text-xs text-muted-foreground">
-                    Best for sharing on the web
+                    Export all pages as PNG (ZIP)
                   </p>
                 </div>
               </DropdownMenuItem>
