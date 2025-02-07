@@ -10,7 +10,6 @@ interface PageProps {
   width: number;
   height: number;
   currentPage: number;
-  onCanvasChange: (index: number, canvas: fabric.Canvas | null) => void;
   containerRef: React.RefObject<HTMLDivElement | null>;
   saveCallback: (values: {
     json: string;
@@ -26,14 +25,14 @@ export function Page({
   width,
   height,
   currentPage,
-  onCanvasChange,
   containerRef,
   saveCallback,
   clearSelectionCallback,
 }: PageProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricRef = useRef<fabric.Canvas | null>(null);
-  const isInitializedRef = useRef(false);
+
+  const { setEditor, setPageId, setCurrentPage } = useEditorsStore();
 
   const { init, editor } = useEditor({
     defaultState: JSON.stringify(page.elements),
@@ -43,14 +42,13 @@ export function Page({
     saveCallback,
   });
 
-  const { setEditor, setCurrentPage } = useEditorsStore();
-
-  // Set editor in store when initialized
+  // Set editor and pageId in store when initialized
   useEffect(() => {
     if (editor) {
       setEditor(index, editor);
+      setPageId(index, page.id);
     }
-  }, [index, editor, setEditor]);
+  }, [index, editor, page.id, setEditor, setPageId]);
 
   // Update current page in store when it changes
   useEffect(() => {
@@ -63,13 +61,11 @@ export function Page({
     if (!containerRef.current) return;
 
     const canvas = new fabric.Canvas(canvasRef.current, {
-      backgroundColor: "#ffffff",
       preserveObjectStacking: true,
       controlsAboveOverlay: true,
     });
 
     fabricRef.current = canvas;
-    onCanvasChange(index, canvas);
 
     init({
       initialCanvas: canvas,
@@ -79,9 +75,8 @@ export function Page({
     return () => {
       canvas.dispose();
       fabricRef.current = null;
-      onCanvasChange(index, null);
     };
-  }, [init, containerRef]);
+  }, [init, containerRef, page.id]);
 
-  return <canvas className="rounded-2xl" ref={canvasRef} />;
+  return <canvas ref={canvasRef} />;
 }

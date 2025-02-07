@@ -22,11 +22,18 @@ import { SettingsSidebar } from "@/features/designs/components/settings-sidebar"
 import { Toolbar } from "@/features/designs/components/toolbar";
 import { ChevronUp, ChevronDown, Copy, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ActiveTool, selectionDependentTools } from "@/features/designs/types";
+import {
+  ActiveTool,
+  JSON_KEYS,
+  selectionDependentTools,
+} from "@/features/designs/types";
 import debounce from "lodash.debounce";
 import { useUpdateDesign } from "@/features/designs/api/use-update-design";
 import { Page } from "./Page";
 import { Navbar } from "@/features/designs/components/navbar";
+import { useEditorsStore } from "@/features/designs/stores/use-editors-store";
+import { cn } from "@/lib/utils";
+import { Hint } from "@/components/hint";
 
 interface EditorProps {
   initialData: Design;
@@ -34,18 +41,25 @@ interface EditorProps {
 
 const Editor = ({ initialData }: EditorProps) => {
   const { mutate } = useUpdateDesign(initialData.id);
+  const editorStore = useEditorsStore();
+
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
   const [currentPage, setCurrentPage] = useState(initialData.currentPage);
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [zoom, setZoom] = useState(100);
-  const [editors, setEditors] = useState<{
-    [key: number]: ReturnType<typeof useEditor>;
-  }>({});
+
   const [canvases, setCanvases] = useState<{
     [key: number]: fabric.Canvas | null;
   }>({});
 
   const containerRef = useRef<HTMLDivElement>(null);
+  // Get fresh editors state
+  const editors = useEditorsStore((state) => state.editors);
+
+  // Initialize store with data
+  useEffect(() => {
+    editorStore.setInitialData(initialData);
+  }, [initialData]);
 
   const onClearSelection = useCallback(() => {
     if (selectionDependentTools.includes(activeTool)) {
@@ -55,41 +69,48 @@ const Editor = ({ initialData }: EditorProps) => {
 
   const debouncedSave = useCallback(
     debounce((values: { json: string; height: number; width: number }) => {
-      const currentPageElements = JSON.parse(values.json);
-      const updatedPages = initialData.pages.map((page, index) => {
-        if (index === currentPage) {
-          return {
-            ...page,
-            elements: currentPageElements,
-          };
-        }
-        return page;
-      });
+      const editors = useEditorsStore.getState().editors;
+      const activeEditors = Object.keys(editors).length;
 
-      mutate({
-        width: values.width,
-        height: values.height,
-        pages: updatedPages,
-      });
-    }, 5000),
-    [mutate, currentPage, initialData.pages],
-  );
-
-  const handleEditorInit = useCallback(
-    (index: number, editor: ReturnType<typeof useEditor>) => {
-      setEditors((prev) => ({ ...prev, [index]: editor }));
-    },
-    [],
-  );
-
-  const handleCanvasChange = useCallback(
-    (index: number, canvas: fabric.Canvas | null) => {
-      setCanvases((prev) => ({ ...prev, [index]: canvas }));
-      if (index === currentPage) {
-        setCanvas(canvas);
+      if (activeEditors === 0) {
+        console.log("No active editors or canvases found");
+        return;
       }
-    },
-    [currentPage],
+
+      const updatedPages = Object.entries(editors)
+        .map(([index, editor]) => {
+          const pageIndex = parseInt(index);
+          const pageId = editorStore.getPageId(pageIndex);
+          const canvas = editor.canvas;
+
+          if (!pageId || !canvas) return;
+
+          const currentState = canvas.toJSON(JSON_KEYS);
+          const thumbnail = canvas.toDataURL({
+            format: "png",
+            quality: 0.1,
+            multiplier: 0.1,
+          });
+
+          return {
+            id: pageId,
+            elements: currentState,
+            thumbnail,
+          };
+        })
+        .filter(
+          (page): page is { id: string; elements: any; thumbnail: string } =>
+            page !== undefined,
+        );
+
+      if (updatedPages.length > 0) {
+        console.log(updatedPages);
+        mutate({
+          pages: updatedPages,
+        });
+      }
+    }, 5000),
+    [mutate],
   );
 
   const handlePageClick = (index: number) => {
@@ -97,7 +118,7 @@ const Editor = ({ initialData }: EditorProps) => {
       return;
     }
     // Clear selections on previous page
-    const previousCanvas = editors[currentPage]?.editor?.canvas;
+    const previousCanvas = editorStore.editors[currentPage]?.canvas;
     if (previousCanvas) {
       previousCanvas.discardActiveObject();
       previousCanvas.renderAll();
@@ -105,7 +126,7 @@ const Editor = ({ initialData }: EditorProps) => {
 
     // Switch to new page
     setCurrentPage(index);
-    const newCanvas = editors[currentPage]?.editor?.canvas;
+    const newCanvas = editorStore.editors[currentPage]?.canvas;
     if (newCanvas) {
       setCanvas(newCanvas);
       // Optional: If you want to clear selections on the new page too
@@ -118,81 +139,127 @@ const Editor = ({ initialData }: EditorProps) => {
     setActiveTool(tool);
   }, []);
 
+  const getEditors = () => {
+    const updatedPages = Object.entries(editors)
+      .map(([pageIndex, editor]) => {
+        const pageId = editorStore.getPageId(parseInt(pageIndex));
+        const canvas = editor.canvas;
+
+        if (!pageId || !canvas) return null;
+
+        return {
+          id: pageId,
+          elements: canvas.toJSON(JSON_KEYS),
+          thumbnail: canvas.toDataURL({
+            format: "png",
+            quality: 0.1,
+            multiplier: 0.1,
+          }),
+        };
+      })
+      .filter(
+        (page): page is { id: string; elements: any; thumbnail: string } =>
+          page !== null,
+      );
+
+    return updatedPages;
+  };
+
   const handleDuplicatePage = (index: number) => {
-    const pageToDuplicate = initialData.pages[index];
+    const editors = useEditorsStore.getState().editors;
+    const pageIdToClone = editorStore.getPageId(index);
+
+    // Get current canvas state
+    const currentCanvas = editors[index]?.canvas;
+    if (!currentCanvas) return;
+
+    // Get current state of all pages
+    const updatedPages = getEditors();
+
+    // Create new page with current canvas state
     const newPage = {
       id: crypto.randomUUID(),
-      elements: JSON.parse(JSON.stringify(pageToDuplicate.elements)), // Deep clone
+      elements: currentCanvas.toJSON(JSON_KEYS),
+      thumbnail: currentCanvas.toDataURL({
+        format: "png",
+        quality: 0.1,
+        multiplier: 0.1,
+      }),
     };
 
-    const updatedPages = [...initialData.pages];
+    // Insert new page after the current one
     updatedPages.splice(index + 1, 0, newPage);
 
-    mutate({
-      pages: updatedPages,
-    });
+    // Update store and save to DB
+    mutate({ pages: updatedPages });
+    setCurrentPage(index + 1);
   };
 
   const handleDeletePage = (index: number) => {
     if (initialData.pages.length <= 1) return;
 
-    const updatedPages = initialData.pages.filter((_, i) => i !== index);
+    // Get current state of all pages
+    const updatedPages = getEditors();
 
-    // If deleting current page, switch to previous page or first page
+    // Remove page at index
+    updatedPages.splice(index, 1);
+
+    // Update current page index
     if (index === currentPage) {
-      const newPageIndex = index === 0 ? 0 : index - 1;
-      setCurrentPage(newPageIndex);
+      setCurrentPage(index === 0 ? 0 : index - 1);
     } else if (index < currentPage) {
-      // If deleting a page before current page, adjust current page index
       setCurrentPage(currentPage - 1);
     }
 
-    mutate({
-      pages: updatedPages,
-    });
+    // Save to DB
+    mutate({ pages: updatedPages });
   };
 
   const handleMovePageUp = (index: number) => {
     if (index === 0) return;
 
-    const updatedPages = [...initialData.pages];
+    // Get current state of all pages
+    const updatedPages = getEditors();
+
+    // Swap pages
     const temp = updatedPages[index];
     updatedPages[index] = updatedPages[index - 1];
     updatedPages[index - 1] = temp;
 
-    // Update current page index if moving current page
+    // Update current page index
     if (index === currentPage) {
       setCurrentPage(currentPage - 1);
     } else if (index - 1 === currentPage) {
       setCurrentPage(currentPage + 1);
     }
 
-    mutate({
-      pages: updatedPages,
-    });
+    // Save to DB
+    mutate({ pages: updatedPages });
   };
 
   const handleMovePageDown = (index: number) => {
     if (index === initialData.pages.length - 1) return;
 
-    const updatedPages = [...initialData.pages];
+    // Get current state of all pages
+    const updatedPages = getEditors();
+
+    // Swap pages
     const temp = updatedPages[index];
     updatedPages[index] = updatedPages[index + 1];
     updatedPages[index + 1] = temp;
 
-    // Update current page index if moving current page
+    // Update current page index
     if (index === currentPage) {
       setCurrentPage(currentPage + 1);
     } else if (index + 1 === currentPage) {
       setCurrentPage(currentPage - 1);
     }
 
-    mutate({
-      pages: updatedPages,
-    });
+    // Save to DB
+    mutate({ pages: updatedPages });
   };
 
-  const handleAddPage = () => {
+  const handleAddPage = (index?: number) => {
     const newPage = {
       id: crypto.randomUUID(),
       elements: {
@@ -245,16 +312,19 @@ const Editor = ({ initialData }: EditorProps) => {
         ],
         version: "5.3.0",
       },
+      thumbnail: "",
     };
+    // Get current state of all pages
+    const updatedPages = getEditors();
 
-    const updatedPages = [...initialData.pages, newPage];
+    const insertIndex = typeof index === "number" ? index : currentPage;
+    updatedPages.splice(insertIndex + 1, 0, newPage);
 
     mutate({
       pages: updatedPages,
     });
 
-    // Switch to the new page
-    setCurrentPage(updatedPages.length - 1);
+    setCurrentPage(insertIndex + 1);
   };
 
   return (
@@ -331,7 +401,7 @@ const Editor = ({ initialData }: EditorProps) => {
             activeTool={activeTool}
             onChangeActiveTool={onChangeActiveTool}
             key={JSON.stringify(
-              editors[currentPage]?.editor?.canvas.getActiveObject(),
+              editorStore.editors[currentPage]?.canvas.getActiveObject(),
             )}
           />
           <div
@@ -351,66 +421,77 @@ const Editor = ({ initialData }: EditorProps) => {
                       Page {index + 1}
                     </span>
                     <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleMovePageUp(index);
-                        }}
-                        disabled={index === 0}
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleMovePageDown(index);
-                        }}
-                        disabled={index === initialData.pages.length - 1}
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDuplicatePage(index);
-                        }}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeletePage(index);
-                        }}
-                        disabled={initialData.pages.length === 1}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAddPage();
-                        }}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
+                      <Hint label="Move up" side="top" sideOffset={10}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMovePageUp(index);
+                          }}
+                          disabled={index === 0}
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </Button>
+                      </Hint>
+                      <Hint label="Move down" side="top" sideOffset={10}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMovePageDown(index);
+                          }}
+                          disabled={index === initialData.pages.length - 1}
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </Hint>
+                      <Hint label="Duplicate" side="top" sideOffset={10}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDuplicatePage(index);
+                          }}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </Hint>
+                      <Hint label="Delete" side="top" sideOffset={10}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePage(index);
+                          }}
+                          disabled={initialData.pages.length === 1}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </Hint>
+                      <Hint label="Add page" side="top" sideOffset={10}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddPage(index);
+                          }}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </Hint>
                     </div>
                   </div>
+
                   <div onClick={() => handlePageClick(index)}>
                     <Page
                       page={page}
@@ -418,7 +499,6 @@ const Editor = ({ initialData }: EditorProps) => {
                       width={initialData.width}
                       height={initialData.height}
                       currentPage={currentPage}
-                      onCanvasChange={handleCanvasChange}
                       containerRef={containerRef}
                       saveCallback={debouncedSave}
                       clearSelectionCallback={onClearSelection}
@@ -431,7 +511,7 @@ const Editor = ({ initialData }: EditorProps) => {
                 variant="outline"
                 size="lg"
                 className="mt-4 flex items-center gap-2"
-                onClick={handleAddPage}
+                onClick={() => handleAddPage()}
               >
                 <Plus className="h-4 w-4" />
                 Add Page

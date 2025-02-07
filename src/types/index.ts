@@ -7,7 +7,7 @@ export interface FabricElement {
 
 export interface DesignPage {
   id: string;
-  elements: FabricElement[];
+  elements: any[];
   thumbnail?: string;
 }
 

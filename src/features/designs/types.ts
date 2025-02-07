@@ -40,24 +40,92 @@ export const filters = [
 ];
 
 export const fonts = [
+  // Playful and Child-friendly
+  "Comic Neue",
+  "Bubblegum Sans",
+  "Schoolbell",
+  "Patrick Hand",
+  "Sniglet",
+  "Gloria Hallelujah",
+  "Architects Daughter",
+  "Indie Flower",
+  "Amatic SC",
+  "Fredoka",
+  "Balsamiq Sans",
+  "Gochi Hand",
+  "Short Stack",
+  "Crafty Girls",
+  "Dekko",
+  "Marker Felt",
+  "Andika",
+  "Mali",
+  "Chilanka",
+  "Gaegu",
+
+  // Cute
+  "Baloo 2",
+  "Comfortaa",
+  "Varela Round",
+  "Mochiy Pop One",
+  "Itim",
+  "Dongle",
+  "Gamja Flower",
+
+  // Fancy/Elegant
+  "Cinzel",
+  "Cormorant Garamond",
+  "Pinyon Script",
+  "Alex Brush",
+  "Tangerine",
+  "Rouge Script",
+  "Allura",
+
+  // Vintage/Retro
+  "Abril Fatface",
+  "Lobster",
+  "Sacramento",
+  "Berkshire Swash",
+  "Fugaz One",
+  "Monoton",
+  "Righteous",
+
+  // Futuristic/Modern
+  "Orbitron",
+  "Audiowide",
+  "Exo 2",
+  "Rajdhani",
+  "Syncopate",
+  "Chakra Petch",
+  "Teko",
+
+  // Clean and Modern
+  "Poppins",
+  "Quicksand",
+  "Nunito",
+  "Montserrat",
+
+  // Decorative
+  "Pacifico",
+  "Dancing Script",
+  "Great Vibes",
+  "Satisfy",
+
+  // Readable Serif
+  "Merriweather",
+  "Playfair Display",
+  "Lora",
+  "Crimson Text",
+
+  // Handwriting
+  "Caveat",
+  "Kalam",
+  "Shadows Into Light",
+  "Permanent Marker",
+
+  // Fallbacks
   "Arial",
-  "Arial Black",
-  "Verdana",
-  "Helvetica",
-  "Tahoma",
-  "Trebuchet MS",
-  "Times New Roman",
-  "Georgia",
-  "Garamond",
-  "Courier New",
-  "Brush Script MT",
-  "Palatino",
-  "Bookman",
   "Comic Sans MS",
-  "Impact",
-  "Lucida Sans Unicode",
-  "Geneva",
-  "Lucida Console",
+  "Verdana",
 ];
 
 export const selectionDependentTools = [

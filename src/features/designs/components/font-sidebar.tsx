@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ActiveTool, Editor, fonts } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
@@ -18,6 +19,20 @@ export const FontSidebar = ({
 }: FontSidebarProps) => {
   const editor = useEditorsStore((state) => state.getCurrentEditor());
   const value = editor?.getActiveFontFamily();
+
+  // Load Google Fonts
+  useEffect(() => {
+    const link = document.createElement("link");
+    link.href =
+      "https://fonts.googleapis.com/css2?family=" +
+      fonts.map((font) => font.replace(/ /g, "+")).join("&family=");
+    link.rel = "stylesheet";
+    document.head.appendChild(link);
+
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, []);
 
   const onClose = () => {
     onChangeActiveTool("select");
@@ -44,7 +59,7 @@ export const FontSidebar = ({
               )}
               style={{
                 fontFamily: font,
-                fontSize: "16px",
+                fontSize: "24px",
                 padding: "8px 16px",
               }}
               onClick={() => editor?.changeFontFamily(font)}

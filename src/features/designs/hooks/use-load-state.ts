@@ -21,7 +21,7 @@ export const useLoadState = ({
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (!initialized.current && initialState?.current && canvas) {
+    if (initialState?.current && canvas) {
       const data = JSON.parse(initialState.current);
 
       canvas.loadFromJSON(data, () => {
