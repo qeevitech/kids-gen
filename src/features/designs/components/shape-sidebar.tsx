@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IoTriangle } from "react-icons/io5";
 import { FaDiamond } from "react-icons/fa6";
-import { FaCircle, FaSquare, FaSquareFull } from "react-icons/fa";
+import { FaCircle, FaSquare } from "react-icons/fa";
 import { ChevronLeft } from "lucide-react";
 
 import { ActiveTool } from "@/features/designs/types";
@@ -75,6 +75,7 @@ export const ShapeSidebar = ({
     onChangeActiveTool("select");
   };
 
+  /* eslint-disable @typescript-eslint/no-unnecessary-type-constraint */
   const getPreviewItems = <T extends any>(
     items: T[],
     count: number = 6,

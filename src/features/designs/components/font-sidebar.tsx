@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ActiveTool, Editor, fonts } from "@/features/designs/types";
+import { ActiveTool, fonts } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
 

@@ -1,4 +1,4 @@
-import { ActiveTool, Editor, filters } from "@/features/designs/types";
+import { ActiveTool, filters } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
 

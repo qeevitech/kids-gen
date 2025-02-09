@@ -1,6 +1,5 @@
 import {
   ActiveTool,
-  Editor,
   STROKE_COLOR,
   STROKE_WIDTH,
 } from "@/features/designs/types";

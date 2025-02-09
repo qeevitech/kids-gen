@@ -3,7 +3,7 @@ import { AlertTriangle } from "lucide-react";
 
 // import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
 
-import { ActiveTool, Editor } from "@/features/designs/types";
+import { ActiveTool } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
 

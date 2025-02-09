@@ -1,14 +1,10 @@
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
+import { InferRequestType } from "hono";
 
 import { client } from "@/lib/hono";
 
-type ResponseType = InferResponseType<
-  (typeof client.api.designs)["$post"],
-  200
->;
 type RequestType = InferRequestType<
   (typeof client.api.designs)["$post"]
 >["json"];

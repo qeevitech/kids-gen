@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { ActiveTool, Editor } from "@/features/designs/types";
+import { ActiveTool } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
 import { ColorPicker } from "@/features/designs/components/color-picker";

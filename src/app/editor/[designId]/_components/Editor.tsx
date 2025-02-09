@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useCallback, useRef, useState, useEffect } from "react";
-import { fabric } from "fabric";
 import { Design } from "@/types";
-import { useEditor } from "@/hooks/use-editor";
 import { Sidebar } from "@/features/designs/components/sidebar";
 import { ShapeSidebar } from "@/features/designs/components/shape-sidebar";
 import { FillColorSidebar } from "@/features/designs/components/fill-color-sidebar";
@@ -32,7 +30,6 @@ import { useUpdateDesign } from "@/features/designs/api/use-update-design";
 import { Page } from "./Page";
 import { Navbar } from "@/features/designs/components/navbar";
 import { useEditorsStore } from "@/features/designs/stores/use-editors-store";
-import { cn } from "@/lib/utils";
 import { Hint } from "@/components/hint";
 import { Footer } from "@/features/designs/components/footer";
 
@@ -46,12 +43,6 @@ const Editor = ({ initialData }: EditorProps) => {
 
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
   const [currentPage, setCurrentPage] = useState(initialData.currentPage);
-  const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
-  const [zoom, setZoom] = useState(100);
-
-  const [canvases, setCanvases] = useState<{
-    [key: number]: fabric.Canvas | null;
-  }>({});
 
   const containerRef = useRef<HTMLDivElement>(null);
   // Get fresh editors state
@@ -69,7 +60,7 @@ const Editor = ({ initialData }: EditorProps) => {
   }, [activeTool]);
 
   const debouncedSave = useCallback(
-    debounce((values: { json: string; height: number; width: number }) => {
+    debounce(() => {
       const editors = useEditorsStore.getState().editors;
       const activeEditors = Object.keys(editors).length;
 
@@ -129,7 +120,6 @@ const Editor = ({ initialData }: EditorProps) => {
     setCurrentPage(index);
     const newCanvas = editorStore.editors[currentPage]?.canvas;
     if (newCanvas) {
-      setCanvas(newCanvas);
       // Optional: If you want to clear selections on the new page too
       newCanvas.discardActiveObject();
       newCanvas.renderAll();
@@ -168,7 +158,6 @@ const Editor = ({ initialData }: EditorProps) => {
 
   const handleDuplicatePage = (index: number) => {
     const editors = useEditorsStore.getState().editors;
-    const pageIdToClone = editorStore.getPageId(index);
 
     // Get current canvas state
     const currentCanvas = editors[index]?.canvas;
@@ -520,7 +509,7 @@ const Editor = ({ initialData }: EditorProps) => {
               </Button>
             </div>
           </div>
-          <Footer editor={editorStore.editors[currentPage]} />
+          <Footer />
         </main>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { ActiveTool, Editor, STROKE_COLOR } from "@/features/designs/types";
+import { ActiveTool, STROKE_COLOR } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
 import { ColorPicker } from "@/features/designs/components/color-picker";

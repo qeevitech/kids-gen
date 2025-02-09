@@ -1,6 +1,5 @@
 import {
   ActiveTool,
-  Editor,
   STROKE_DASH_ARRAY,
   STROKE_WIDTH,
 } from "@/features/designs/types";

@@ -18,12 +18,7 @@ import {
 
 import { isTextType } from "@/features/designs/utils";
 import { FontSizeInput } from "@/features/designs/components/font-size-input";
-import {
-  ActiveTool,
-  Editor,
-  FONT_SIZE,
-  FONT_WEIGHT,
-} from "@/features/designs/types";
+import { ActiveTool, FONT_SIZE, FONT_WEIGHT } from "@/features/designs/types";
 
 import { cn } from "@/lib/utils";
 import { Hint } from "@/components/hint";

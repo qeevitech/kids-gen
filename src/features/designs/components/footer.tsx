@@ -1,14 +1,9 @@
 import { Minimize, ZoomIn, ZoomOut } from "lucide-react";
 import { useEditorsStore } from "../stores/use-editors-store";
-import { Editor } from "@/features/designs/types";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
 
-interface FooterProps {
-  editor: Editor | undefined;
-}
-
-export const Footer = ({ editor }: FooterProps) => {
+export const Footer = () => {
   const editors = useEditorsStore((state) => state.editors);
 
   const handleAutoZoom = () => {

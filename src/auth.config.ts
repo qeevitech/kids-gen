@@ -2,6 +2,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import type { NextAuthConfig } from "next-auth";
 import { eq } from "drizzle-orm";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { JWT } from "next-auth/jwt";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
@@ -56,10 +57,7 @@ export default {
           return null;
         }
 
-        const passwordsMatch = await bcrypt.compare(
-          password,
-          user.password,
-        );
+        const passwordsMatch = await bcrypt.compare(password, user.password);
 
         if (!passwordsMatch) {
           return null;
@@ -67,13 +65,13 @@ export default {
 
         return user;
       },
-    }), 
-    GitHub, 
-    Google
+    }),
+    GitHub,
+    Google,
   ],
   pages: {
     signIn: "/sign-in",
-    error: "/sign-in"
+    error: "/sign-in",
   },
   session: {
     strategy: "jwt",
@@ -88,10 +86,10 @@ export default {
     },
     jwt({ token, user }) {
       if (user) {
-        token.id = user.id;  
+        token.id = user.id;
       }
 
       return token;
-    }
+    },
   },
-} satisfies NextAuthConfig
+} satisfies NextAuthConfig;

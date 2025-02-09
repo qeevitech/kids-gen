@@ -6,7 +6,6 @@ import { zValidator } from "@hono/zod-validator";
 
 import { db } from "@/db/drizzle";
 import { designs } from "@/db/schema";
-import { users } from "@/db/schema";
 
 // Validation schema for design pages
 const pageSchema = z.object({

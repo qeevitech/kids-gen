@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { AlertTriangle, Loader, Upload } from "lucide-react";
+import { AlertTriangle, Loader } from "lucide-react";
 
-import { ActiveTool, Editor } from "@/features/designs/types";
+import { ActiveTool } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
 

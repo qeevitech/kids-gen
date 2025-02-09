@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { createInsertSchema } from "drizzle-zod";
+// import { createInsertSchema } from "drizzle-zod";
 import {
   boolean,
   timestamp,
@@ -68,7 +68,7 @@ export const assets = pgTable("assets", {
 });
 
 // Define the type first
-type FoldersTable = ReturnType<typeof createFoldersTable>;
+// type FoldersTable = ReturnType<typeof createFoldersTable>;
 
 // Create a function to define the table
 export function createFoldersTable() {

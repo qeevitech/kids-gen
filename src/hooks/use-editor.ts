@@ -24,6 +24,7 @@ import {
   downloadFile,
   isTextType,
   transformText,
+  createFilter,
 } from "@/features/designs/utils";
 import { useHotkeys } from "@/features/designs/hooks/use-hotkeys";
 import { useClipboard } from "@/features/designs/hooks/use-clipboard";
@@ -200,9 +201,9 @@ const buildEditor = ({
         if (object.type === "image") {
           const imageObject = object as fabric.Image;
 
-          //   const effect = createFilter(value);
+          const effect = createFilter(value);
 
-          imageObject.filters = [];
+          imageObject.filters = effect ? [effect] : [];
           imageObject.applyFilters();
           canvas.renderAll();
         }

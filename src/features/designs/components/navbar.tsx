@@ -2,10 +2,8 @@
 
 import { CiFileOn } from "react-icons/ci";
 import { BsCloudCheck, BsCloudSlash } from "react-icons/bs";
-import { useFilePicker } from "use-file-picker";
 import { useMutationState } from "@tanstack/react-query";
 import {
-  ChevronDown,
   Download,
   Loader,
   MousePointerClick,
@@ -17,7 +15,7 @@ import { saveAs } from "file-saver";
 
 import { UserButton } from "@/features/auth/components/user-button";
 
-import { ActiveTool, Editor } from "@/features/designs/types";
+import { ActiveTool } from "@/features/designs/types";
 import { Logo } from "@/features/designs/components/logo";
 
 import { cn } from "@/lib/utils";
@@ -53,19 +51,19 @@ export const Navbar = ({ id, activeTool, onChangeActiveTool }: NavbarProps) => {
   const isError = currentStatus === "error";
   const isPending = currentStatus === "pending";
 
-  const { openFilePicker } = useFilePicker({
-    accept: ".json",
-    onFilesSuccessfullySelected: ({ plainFiles }: any) => {
-      if (plainFiles && plainFiles.length > 0) {
-        const file = plainFiles[0];
-        const reader = new FileReader();
-        reader.readAsText(file, "UTF-8");
-        reader.onload = () => {
-          editor?.loadJson(reader.result as string);
-        };
-      }
-    },
-  });
+  // const { openFilePicker } = useFilePicker({
+  //   accept: ".json",
+  //   onFilesSuccessfullySelected: ({ plainFiles }: any) => {
+  //     if (plainFiles && plainFiles.length > 0) {
+  //       const file = plainFiles[0];
+  //       const reader = new FileReader();
+  //       reader.readAsText(file, "UTF-8");
+  //       reader.onload = () => {
+  //         editor?.loadJson(reader.result as string);
+  //       };
+  //     }
+  //   },
+  // });
 
   const editors = useEditorsStore((state) => state.editors);
 
