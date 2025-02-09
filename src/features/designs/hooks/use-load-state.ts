@@ -1,7 +1,6 @@
 import { fabric } from "fabric";
 import { useEffect, useRef } from "react";
-
-import { JSON_KEYS } from "@/features/designs/types";
+import { JSON_KEYS } from "../types";
 
 interface UseLoadStateProps {
   autoZoom: () => void;
@@ -19,25 +18,56 @@ export const useLoadState = ({
   setHistoryIndex,
 }: UseLoadStateProps) => {
   const initialized = useRef(false);
+  const canvasRef = useRef<fabric.Canvas | null>(null);
 
   useEffect(() => {
-    if (initialState?.current && canvas) {
-      const data = JSON.parse(initialState.current);
-
-      canvas.loadFromJSON(data, () => {
-        const currentState = JSON.stringify(canvas.toJSON());
-
-        canvasHistory.current = [currentState];
-        setHistoryIndex(0);
-        autoZoom();
-      });
-      initialized.current = true;
+    if (canvas && canvas !== canvasRef.current) {
+      canvasRef.current = canvas;
     }
-  }, [
-    canvas,
-    autoZoom,
-    initialState, // no need, this is a ref
-    canvasHistory, // no need, this is a ref
-    setHistoryIndex, // no need, this is a dispatch
-  ]);
+  }, [canvas]);
+
+  useEffect(() => {
+    const loadCanvas = () => {
+      if (!canvasRef.current || !initialState?.current) return;
+
+      try {
+        const data = JSON.parse(initialState.current);
+
+        // Clear existing objects
+        canvasRef.current.getObjects().forEach((obj) => {
+          canvasRef.current?.remove(obj);
+        });
+
+        // Load new state
+        canvasRef.current.loadFromJSON(data, () => {
+          const currentState = JSON.stringify(
+            canvasRef.current?.toJSON(JSON_KEYS),
+          );
+          canvasHistory.current = [currentState];
+          setHistoryIndex(0);
+
+          // Ensure canvas is rendered
+          canvasRef.current?.requestRenderAll();
+          autoZoom();
+        });
+      } catch (error) {
+        console.error("Error loading canvas state:", error);
+      }
+    };
+
+    if (!initialized.current && canvasRef.current && initialState?.current) {
+      initialized.current = true;
+      loadCanvas();
+    } else if (
+      initialized.current &&
+      canvasRef.current &&
+      initialState?.current
+    ) {
+      // Use setTimeout to ensure canvas is ready
+      const timeoutId = setTimeout(loadCanvas, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [autoZoom, initialState, canvasHistory, setHistoryIndex]);
+
+  return { canvasRef };
 };

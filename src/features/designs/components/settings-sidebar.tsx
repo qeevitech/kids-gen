@@ -51,10 +51,22 @@ export const SettingsSidebar = ({
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    editor?.changeSize({
-      width: parseInt(width, 10),
-      height: parseInt(height, 10),
+    // Get all editors from store
+    const editors = useEditorsStore.getState().editors;
+
+    // Update each editor's canvas size
+    Object.values(editors).forEach((editor) => {
+      editor?.changeSize({
+        width: parseInt(width, 10),
+        height: parseInt(height, 10),
+      });
     });
+
+    // // Update workspace size for all pages
+    // editor?.changeSize({
+    //   width: parseInt(width, 10),
+    //   height: parseInt(height, 10),
+    // });
   };
 
   const onClose = () => {

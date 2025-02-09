@@ -34,6 +34,7 @@ import { Navbar } from "@/features/designs/components/navbar";
 import { useEditorsStore } from "@/features/designs/stores/use-editors-store";
 import { cn } from "@/lib/utils";
 import { Hint } from "@/components/hint";
+import { Footer } from "@/features/designs/components/footer";
 
 interface EditorProps {
   initialData: Design;
@@ -232,6 +233,7 @@ const Editor = ({ initialData }: EditorProps) => {
     } else if (index - 1 === currentPage) {
       setCurrentPage(currentPage + 1);
     }
+    console.log(updatedPages);
 
     // Save to DB
     mutate({ pages: updatedPages });
@@ -510,7 +512,7 @@ const Editor = ({ initialData }: EditorProps) => {
               <Button
                 variant="outline"
                 size="lg"
-                className="mt-4 flex items-center gap-2"
+                className="mb-10 mt-4 flex items-center gap-2"
                 onClick={() => handleAddPage()}
               >
                 <Plus className="h-4 w-4" />
@@ -518,6 +520,7 @@ const Editor = ({ initialData }: EditorProps) => {
               </Button>
             </div>
           </div>
+          <Footer editor={editorStore.editors[currentPage]} />
         </main>
       </div>
     </div>
