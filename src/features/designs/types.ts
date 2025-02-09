@@ -162,6 +162,7 @@ export const colors = [
 
 export type ActiveTool =
   | "select"
+  | "train"
   | "shapes"
   | "text"
   | "images"

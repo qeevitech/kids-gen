@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
         hostname: "utfs.io",
       },
       {
+        hostname: "cdn.kidbooks.fun",
+        protocol: "https",
+        port: "",
+      },
+      {
         protocol: "https",
         hostname: "replicate.delivery",
       },

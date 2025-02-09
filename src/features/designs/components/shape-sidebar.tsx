@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { useEditorsStore } from "../stores/use-editors-store";
 import { ToolSidebarClose } from "./tool-sidebar-close";
 
+const NEXT_R2_URL = process.env.NEXT_PUBLIC_R2_URL;
+
 interface ShapeSidebarProps {
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
@@ -137,7 +139,7 @@ export const ShapeSidebar = ({
                 onClick={() => handleImageClick(bubble.src)}
               >
                 <img
-                  src={bubble.src}
+                  src={`${NEXT_R2_URL}${bubble.src}` || "/placeholder.svg"}
                   alt={bubble.label}
                   className="h-full w-full object-contain"
                 />

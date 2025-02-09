@@ -32,6 +32,7 @@ import { Navbar } from "@/features/designs/components/navbar";
 import { useEditorsStore } from "@/features/designs/stores/use-editors-store";
 import { Hint } from "@/components/hint";
 import { Footer } from "@/features/designs/components/footer";
+import { TrainModel } from "@/features/designs/components/train-model";
 
 interface EditorProps {
   initialData: Design;
@@ -327,6 +328,10 @@ const Editor = ({ initialData }: EditorProps) => {
       />
       <div className="absolute top-[68px] flex h-[calc(100%-68px)] w-full">
         <Sidebar
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <TrainModel
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
         />

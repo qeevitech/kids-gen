@@ -1,6 +1,6 @@
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { r2, BUCKET_NAME } from "./cloudflare";
+import { s3Client, BUCKET_NAME } from "./cloudflare";
 
 export async function uploadAsset(file: File, userId: string) {
   const key = `${userId}/${Date.now()}-${file.name}`;
@@ -12,7 +12,7 @@ export async function uploadAsset(file: File, userId: string) {
     ContentType: file.type,
   });
 
-  await r2.send(command);
+  await s3Client.send(command);
 
   // Generate public URL
   const url = `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${key}`;
@@ -32,5 +32,5 @@ export async function getSignedAssetUrl(key: string) {
     Key: key,
   });
 
-  return getSignedUrl(r2, command, { expiresIn: 3600 }); // 1 hour
+  return getSignedUrl(s3Client, command, { expiresIn: 3600 }); // 1 hour
 }
