@@ -8,6 +8,8 @@ import designs from "./designs";
 import assets from "./assets";
 import images from "./images";
 import templates from "./templates";
+import train from "./train";
+import webhooks from "./webhooks";
 import authConfig from "@/auth.config";
 
 // Revert to "edge" if planning on running on the edge
@@ -30,7 +32,9 @@ const routes = app
   .route("/images", images)
   .route("/designs", designs)
   .route("/assets", assets)
-  .route("/templates", templates);
+  .route("/templates", templates)
+  .route("/webhooks", webhooks)
+  .route("/train", train);
 
 export const GET = handle(app);
 export const POST = handle(app);

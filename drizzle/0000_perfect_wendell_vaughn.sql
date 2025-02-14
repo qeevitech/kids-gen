@@ -70,6 +70,22 @@ CREATE TABLE "fonts" (
 	"is_system" boolean DEFAULT false
 );
 --> statement-breakpoint
+CREATE TABLE "models" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" text NOT NULL,
+	"model_id" text NOT NULL,
+	"model_name" text NOT NULL,
+	"gender" text NOT NULL,
+	"version" text NOT NULL,
+	"training_status" text NOT NULL,
+	"trigger_word" text NOT NULL,
+	"training_time" text NOT NULL,
+	"training_steps" integer NOT NULL,
+	"training_id" text NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE "session" (
 	"sessionToken" text PRIMARY KEY NOT NULL,
 	"userId" text NOT NULL,
@@ -110,4 +126,5 @@ ALTER TABLE "authenticator" ADD CONSTRAINT "authenticator_userId_user_id_fk" FOR
 ALTER TABLE "designs" ADD CONSTRAINT "designs_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "folders" ADD CONSTRAINT "folders_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "folders" ADD CONSTRAINT "folders_parent_id_folders_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."folders"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "models" ADD CONSTRAINT "models_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;

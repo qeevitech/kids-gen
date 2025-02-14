@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { getPresignedStorageUrl } from "../actions/actions";
+import { useTrainModel } from "../api/use-train-model";
 
 const ACCEPTED_ZIP_FILES = ["application/x-zip-compressed", "application/zip"];
 const MAX_FILE_SIZE = 45 * 1024 * 1024; // 45 MB
@@ -42,6 +43,7 @@ const formSchema = z.object({
 
 const TrainModelForm = () => {
   const toastId = useId();
+  const mutation = useTrainModel();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,69 +60,61 @@ const TrainModelForm = () => {
     toast.loading("Uploading file...", { id: toastId });
 
     try {
+      // Get presigned URL for upload
       const data = await getPresignedStorageUrl(values.zipFile[0].name);
       if (data.error) {
-        toast.error(data.error || "Failed to upload the file!", {
-          id: toastId,
-        });
-        return;
+        throw new Error(data.error);
       }
 
-      if (!data.signedUrl) {
-        throw new Error("Failed to get signed URL!");
+      if (!data.signedUrl || !data.key) {
+        throw new Error("Failed to generate upload URL");
       }
 
-      // uploading file
-      const urlResponse = await fetch(data.signedUrl, {
+      // Upload file to R2
+      const uploadResponse = await fetch(data.signedUrl, {
         method: "PUT",
-
         headers: {
-          "Contet-Type": values.zipFile[0].type,
+          "Content-Type": values.zipFile[0].type,
         },
         body: values.zipFile[0],
       });
 
-      if (!urlResponse.ok) {
-        throw new Error("Upload Failed!");
+      if (!uploadResponse.ok) {
+        throw new Error("Upload failed");
       }
-
-      const res = await urlResponse.json();
 
       toast.success("File uploaded successfully!", { id: toastId });
 
-      const formData = new FormData();
-      formData.append("fileKey", res.Key);
-      formData.append("modelName", values.modelName);
-      formData.append("gender", values.gender);
-
-      toast.loading("Initiating model training...", { id: toastId });
-
-      // use the /train handler
-      // const response = await fetch("/api/train", {
-      //   method: "POST",
-      //   body: formData,
-      // });
-
-      // const results = await response.json();
-
-      // if (!response.ok || results?.error) {
-      //   throw new Error(results?.error || "Failed to train the model!");
-      // }
-
-      toast.success(
-        "Training started successfully! You'll receive a notification once it gets completed!",
-        { id: toastId },
+      // Start training
+      mutation.mutate(
+        {
+          fileKey: data.key,
+          modelName: values.modelName,
+          gender: values.gender,
+        },
+        {
+          onSuccess: () => {
+            toast.success(
+              "Training started! You'll receive a notification when it's complete.",
+              { id: toastId },
+            );
+            form.reset();
+          },
+          onError: (error) => {
+            toast.error(error.message, { id: toastId });
+          },
+        },
       );
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to start training!";
-      toast.error(errorMessage, { id: toastId, duration: 5000 });
+        error instanceof Error ? error.message : "Upload failed";
+      toast.error(errorMessage, { id: toastId });
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-24">
         <fieldset className="grid max-w-5xl gap-6 rounded-lg border bg-background p-4 sm:p-8">
           <FormField
             control={form.control}
@@ -184,28 +178,28 @@ const TrainModelForm = () => {
 
                 <div className="mb-4 rounded-lg pb-4 text-card-foreground shadow-sm">
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• Provide 10, 12 or 15 images in total</li>
-                    <li>• Ideal breakdown for 12 images:</li>
-
+                    <li>• Upload 10-15 high-quality photos of yourself</li>
+                    <li>• For best results with 12 photos, include:</li>
                     <ul className="ml-4 mt-1 space-y-1">
-                      <li>- 6 face closeups</li>
-                      <li>- 3/4 half body closeups (till stomach)</li>
-                      <li>- 2/3 full body shots</li>
+                      <li>- 6 clear face photos (front view, good lighting)</li>
+                      <li>- 3 upper body shots (from head to waist)</li>
+                      <li>- 3 full body photos (head to toe)</li>
                     </ul>
-                    <li>• No accessories on face/head ideally</li>
-                    <li>• No other people in images</li>
-                    <li>
-                      • Different expressions, clothing, backgrounds with good
-                      lighting
+                    <li>• Photo requirements:</li>
+                    <ul className="ml-4 mt-1 space-y-1">
+                      <li>- Recent photos</li>
+                      <li>- Clear, well-lit photos with natural expressions</li>
+                      <li>
+                        - Square format (1:1 ratio), minimum 1048x1048 pixels
+                      </li>
+                      <li>- Variety of outfits and simple backgrounds</li>
+                      <li>- Solo photos only (no other people in frame)</li>
+                      <li>- Avoid hats, sunglasses, or face coverings</li>
+                    </ul>
+                    <li className="text-destructive">
+                      • Important: Package all photos in a single ZIP file (max
+                      45MB)
                     </li>
-                    <li>
-                      • Images to be in 1:1 resolution (1048x1048 or higher)
-                    </li>
-                    <li>
-                      • Use images of similar age group (ideally within past few
-                      months)
-                    </li>
-                    <li>• Provide only zip file (under 45MB size)</li>
                   </ul>
                 </div>
 

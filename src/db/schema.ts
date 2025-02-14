@@ -163,6 +163,24 @@ export const authenticators = pgTable(
   }),
 );
 
+export const models = pgTable("models", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  modelId: text("model_id").notNull(),
+  modelName: text("model_name").notNull(),
+  gender: text("gender").notNull(),
+  version: text("version").notNull(),
+  trainingStatus: text("training_status").notNull(),
+  triggerWord: text("trigger_word").notNull(),
+  trainingTime: text("training_time").notNull(),
+  trainingSteps: integer("training_steps").notNull(),
+  trainingId: text("training_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const designsRelations = relations(designs, ({ one }) => ({
   user: one(users, {
     fields: [designs.userId],
@@ -187,4 +205,11 @@ export const foldersRelations = relations(folders, ({ one, many }) => ({
     references: [folders.id],
   }),
   children: many(folders),
+}));
+
+export const modelsRelations = relations(models, ({ one }) => ({
+  user: one(users, {
+    fields: [models.userId],
+    references: [users.id],
+  }),
 }));
