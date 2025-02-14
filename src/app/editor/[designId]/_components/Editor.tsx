@@ -33,6 +33,7 @@ import { useEditorsStore } from "@/features/designs/stores/use-editors-store";
 import { Hint } from "@/components/hint";
 import { Footer } from "@/features/designs/components/footer";
 import { TrainModel } from "@/features/designs/components/train-model";
+import { GenerateStory } from "@/features/designs/components/generate-story";
 
 interface EditorProps {
   initialData: Design;
@@ -331,7 +332,12 @@ const Editor = ({ initialData }: EditorProps) => {
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
         />
+
         <TrainModel
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <GenerateStory
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
         />

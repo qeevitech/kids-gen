@@ -10,9 +10,9 @@ export type ResponseType = InferResponseType<
 type RequestType = InferRequestType<typeof client.api.templates.$get>["query"];
 
 export const useGetTemplates = (apiQuery: RequestType) => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [
-      "templates",
+      "story-templates",
       {
         page: apiQuery.page,
         limit: apiQuery.limit,
@@ -22,15 +22,9 @@ export const useGetTemplates = (apiQuery: RequestType) => {
       const response = await client.api.templates.$get({
         query: apiQuery,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch templates");
-      }
-
+      if (!response.ok) throw new Error("Failed to fetch templates");
       const { data } = await response.json();
       return data;
     },
   });
-
-  return query;
 };

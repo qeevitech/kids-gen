@@ -35,6 +35,12 @@ export const Sidebar = ({ activeTool, onChangeActiveTool }: SidebarProps) => {
           onClick={() => onChangeActiveTool("train")}
         />
         <SidebarItem
+          icon={LayoutTemplate}
+          label="Generate Story"
+          isActive={activeTool === "generate-story"}
+          onClick={() => onChangeActiveTool("generate-story")}
+        />
+        <SidebarItem
           icon={ImageIcon}
           label="Image"
           isActive={activeTool === "images"}

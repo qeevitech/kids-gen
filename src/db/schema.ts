@@ -181,6 +181,17 @@ export const models = pgTable("models", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const storyTemplates = pgTable("story_templates", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  thumbnail: text("thumbnail").notNull(),
+  category: text("category").notNull(), // kids, grown-ups
+  prompt: text("prompt").notNull(),
+  isPublic: boolean("is_public").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const designsRelations = relations(designs, ({ one }) => ({
   user: one(users, {
     fields: [designs.userId],
@@ -213,3 +224,10 @@ export const modelsRelations = relations(models, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+export const storyTemplatesRelations = relations(
+  storyTemplates,
+  ({ many }) => ({
+    stories: many(models),
+  }),
+);

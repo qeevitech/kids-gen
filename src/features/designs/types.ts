@@ -163,6 +163,7 @@ export const colors = [
 export type ActiveTool =
   | "select"
   | "train"
+  | "generate-story"
   | "shapes"
   | "text"
   | "images"
@@ -330,4 +331,9 @@ export interface Editor {
   getActiveStrokeWidth: () => number;
   getActiveStrokeDashArray: () => number[];
   selectedObjects: fabric.Object[];
+}
+
+export interface fieldData {
+  fieldName: string;
+  fieldValue: string;
 }
