@@ -48,11 +48,13 @@ type KidsStoryForm = z.infer<typeof kidsStorySchema>;
 type GrownUpsStoryForm = z.infer<typeof grownUpsStorySchema>;
 
 interface GenerateStoryProps {
+  designId: string;
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
 }
 
 export const GenerateStory = ({
+  designId,
   activeTool,
   onChangeActiveTool,
 }: GenerateStoryProps) => {
@@ -64,36 +66,6 @@ export const GenerateStory = ({
 
   const trainedModels = data?.pages.flatMap((page) => page.models) ?? [];
   const hasTrainedModels = trainedModels.length > 0;
-
-  const kidsForm = useForm<KidsStoryForm>({
-    resolver: zodResolver(kidsStorySchema),
-    defaultValues: {
-      model: hasTrainedModels ? trainedModels[0].id : "flux-dev",
-      prompt: "",
-      ageGroup: "6-8",
-      genre: "adventure",
-    },
-  });
-
-  const grownUpsForm = useForm<GrownUpsStoryForm>({
-    resolver: zodResolver(grownUpsStorySchema),
-    defaultValues: {
-      model: hasTrainedModels ? trainedModels[0].id : "flux-dev",
-      prompt: "",
-      genre: "fiction",
-      tone: "casual",
-    },
-  });
-
-  const onKidsSubmit = async (data: KidsStoryForm) => {
-    console.log("Kids story data:", data);
-    // TODO: Implement story generation
-  };
-
-  const onGrownUpsSubmit = async (data: GrownUpsStoryForm) => {
-    console.log("Grown-ups story data:", data);
-    // TODO: Implement story generation
-  };
 
   return (
     <aside
@@ -115,11 +87,11 @@ export const GenerateStory = ({
             </TabsList>
 
             <TabsContent value="kids">
-              <KidsStoryForm />
+              <KidsStoryForm designId={designId} />
             </TabsContent>
 
             <TabsContent value="grown-ups">
-              <GrownUpStoryForm />
+              <GrownUpStoryForm designId={designId} />
             </TabsContent>
           </Tabs>
         </div>

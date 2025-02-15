@@ -3,7 +3,7 @@ import { AlertTriangle, Loader, Crown } from "lucide-react";
 
 // import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
 
-import { ActiveTool } from "@/features/designs/types";
+import { ActiveTool, Template } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
 
@@ -52,7 +52,7 @@ export const TemplateSidebar = ({
     const ok = await confirm();
 
     if (ok) {
-      editor?.loadJson(template.elements);
+      editor?.loadJson(template.pages);
     }
   };
 
@@ -86,6 +86,12 @@ export const TemplateSidebar = ({
           <div className="grid grid-cols-2 gap-4">
             {data &&
               data.map((template) => {
+                const thumbnailSrc =
+                  template.thumbnail ||
+                  template.pages?.[0]?.thumbnail ||
+                  "/placeholder.png";
+                const isBase64 = thumbnailSrc.startsWith("data:image");
+
                 return (
                   <button
                     style={{
@@ -95,12 +101,20 @@ export const TemplateSidebar = ({
                     key={template.id}
                     className="group relative w-full overflow-hidden rounded-sm border bg-muted transition hover:opacity-75"
                   >
-                    <Image
-                      fill
-                      src={template.thumbnail || ""}
-                      alt={template.name || "Template"}
-                      className="object-cover"
-                    />
+                    {isBase64 ? (
+                      <img
+                        src={thumbnailSrc}
+                        alt={template.name || "Template"}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        fill
+                        src={thumbnailSrc}
+                        alt={template.name || "Template"}
+                        className="object-cover"
+                      />
+                    )}
                     {template.isPro && (
                       <div className="absolute right-2 top-2 flex size-8 items-center justify-center rounded-full bg-black/50">
                         <Crown className="size-4 fill-yellow-500 text-yellow-500" />

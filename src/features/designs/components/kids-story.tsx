@@ -35,6 +35,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useGetTemplates } from "../api/use-get-templates";
+import { useGenerateStory } from "../api/use-generate-story";
 
 const formSchema = z.object({
   storySubject: z.string().min(1, "Story subject is required"),
@@ -84,14 +85,14 @@ const formSchema = z.object({
   ]),
   setting: z.string().optional(),
   moralLesson: z.string().optional(),
-  modelId: z.string().min(1, "Model selection is required"),
-  templateId: z.string().min(1, "Template selection is required"),
+  modelId: z.string().optional(),
+  templateId: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
-export function KidsStoryForm() {
-  const [isLoading, setIsLoading] = useState(false);
+export function KidsStoryForm({ designId }: { designId: string }) {
+  const { mutate: generateStory, isPending: isLoading } = useGenerateStory();
   const router = useRouter();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -123,21 +124,11 @@ export function KidsStoryForm() {
   const templates = templatesData ?? [];
 
   const onSubmit = async (data: FormData) => {
-    try {
-      setIsLoading(true);
-      //   const result = await generateStoryAction(data);
-      //   if (result.success) {
-      //     toast.success("Story generated successfully!");
-      //     router.push(result?.data?.redirectUrl || "/");
-      //   } else {
-      //     toast.error(result.error);
-      //   }
-    } catch (error) {
-      toast.error("Failed to generate story");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+    generateStory({
+      ...data,
+      designId,
+      pageCount: data.length === "Short" ? 3 : data.length === "Medium" ? 5 : 7,
+    });
   };
 
   return (

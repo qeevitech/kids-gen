@@ -44,11 +44,12 @@ export const templates = pgTable("templates", {
   name: text("name").notNull(),
   thumbnail: text("thumbnail").notNull(),
   category: text("category").notNull(),
-  elements: jsonb("elements").default([]),
+  pages: jsonb("pages").default([]),
   width: integer("width").notNull(),
   height: integer("height").notNull(),
   isPro: boolean("is_pro").default(false),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const assets = pgTable("assets", {
@@ -192,10 +193,33 @@ export const storyTemplates = pgTable("story_templates", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const stories = pgTable("stories", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  designId: uuid("design_id")
+    .references(() => designs.id, { onDelete: "cascade" })
+    .unique(), // One design can have only one story
+  title: text("title").notNull(),
+  subtitle: text("subtitle"),
+  coverImagePrompt: text("cover_image_prompt").notNull(),
+  coverImageUrl: text("cover_image_url"),
+  chapters: jsonb("chapters").default([]).notNull(), // Will store array of chapter objects
+  language: text("language").notNull(),
+  genre: text("genre"),
+  tone: text("tone"),
+  storyType: text("story_type"), // For kids stories
+  imageStyle: text("image_style").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const designsRelations = relations(designs, ({ one }) => ({
   user: one(users, {
     fields: [designs.userId],
     references: [users.id],
+  }),
+  story: one(stories, {
+    fields: [designs.id],
+    references: [stories.id],
   }),
 }));
 
@@ -231,3 +255,10 @@ export const storyTemplatesRelations = relations(
     stories: many(models),
   }),
 );
+
+export const storiesRelations = relations(stories, ({ one }) => ({
+  design: one(designs, {
+    fields: [stories.designId],
+    references: [designs.id],
+  }),
+}));

@@ -1,14 +1,22 @@
 import { drizzle } from "drizzle-orm/neon-http";
+import { Pool } from "pg";
+import { templates } from "@/db/schema";
+import * as dotenv from "dotenv";
+dotenv.config({ path: "./.env.local" });
+
+import { defaultTemplates } from "./seed/templates";
 import { neon } from "@neondatabase/serverless";
-
-import { seedTemplates } from "./seed/templates";
-
-const sql = neon(process.env.DATABASE_URL!);
-const db = drizzle(sql);
 
 async function main() {
   console.log("🌱 Seeding templates...");
-  await seedTemplates(db);
+  const client = neon(process.env.DATABASE_URL!);
+  const db = drizzle(client);
+
+  // await seedTemplates(db);
+
+  for (const template of defaultTemplates) {
+    await db.insert(templates).values(template).onConflictDoNothing();
+  }
   console.log("✅ Templates seeded");
 }
 

@@ -82,7 +82,7 @@ const Editor = ({ initialData }: EditorProps) => {
           const currentState = canvas.toJSON(JSON_KEYS);
           const thumbnail = canvas.toDataURL({
             format: "png",
-            quality: 0.1,
+            quality: 1,
             multiplier: 0.1,
           });
 
@@ -338,6 +338,7 @@ const Editor = ({ initialData }: EditorProps) => {
           onChangeActiveTool={onChangeActiveTool}
         />
         <GenerateStory
+          designId={initialData.id}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
         />

@@ -10,6 +10,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
+  SelectLabel,
 } from "@/components/ui/select";
 import {
   FormControl,
@@ -28,6 +30,9 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import StorySubjectInput from "./StorySubjectInput";
+import { client } from "@/lib/hono";
+import { useRouter } from "next/navigation";
+import { useGenerateStory } from "../api/use-generate-story";
 
 const formSchema = z.object({
   storySubject: z.string().min(1, "storySubject is required"),
@@ -51,11 +56,9 @@ const formSchema = z.object({
     "Suspenseful",
   ]),
 
-  plotElements: z
-    .array(z.string())
-    .min(1, "At least one plot element is required"),
-  characterDescription: z.string().min(1, "Character description is required"),
-  themes: z.array(z.string()).min(1, "At least one theme is required"),
+  plotElements: z.array(z.string()).optional(),
+  characterDescription: z.string().optional(),
+  themes: z.array(z.string()).optional(),
   language: z.enum([
     "en",
     "hi",
@@ -77,19 +80,44 @@ const formSchema = z.object({
     "ko",
     "zh",
   ]),
-  modelId: z.string().min(1, "Model selection is required"),
-  templateId: z.string().min(1, "Template selection is required"),
+  modelId: z.string().optional(),
+  templateId: z.string().optional(),
   additionalNotes: z.string().optional(),
   pageCount: z
     .number()
     .min(3, "Story must be at least 3 pages")
     .max(20, "Story cannot exceed 20 pages"),
+  imageStyle: z.enum([
+    "Black and White",
+    "Line Art",
+    "Pencil Sketch",
+    "Charcoal",
+    "Ink Drawing",
+    "Oil Painting",
+    "Watercolor",
+    "Acrylic",
+    "Gouache",
+    "Digital Art",
+    "Vector Art",
+    "Minimalist",
+    "Art Deco",
+    "Art Nouveau",
+    "Impressionist",
+    "Expressionist",
+    "Film Noir",
+    "Gothic",
+    "Dark Fantasy",
+    "Vintage Etching",
+    "Woodcut",
+  ]),
+  modelName: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
-export function GrownUpStoryForm() {
-  const [isLoading, setIsLoading] = useState(false);
+export function GrownUpStoryForm({ designId }: { designId: string }) {
+  const { mutate: generateStory, isPending: isLoading } = useGenerateStory();
+  const [isGenerating, setIsGenerating] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -104,6 +132,8 @@ export function GrownUpStoryForm() {
       templateId: "",
       additionalNotes: "",
       pageCount: 3,
+      imageStyle: undefined,
+      modelName: undefined,
     },
   });
 
@@ -111,25 +141,22 @@ export function GrownUpStoryForm() {
     data: templatesData,
     isLoading: templatesLoading,
     isError: templatesError,
-  } = useGetTemplates({ page: "1", limit: "4", category: "grown-ups" });
+  } = useGetTemplates({ page: "1", limit: "10", category: "grown-ups" });
   const { data: modelsData } = useGetTrainedModels();
 
   const trainedModels = modelsData?.pages.flatMap((page) => page.models) ?? [];
   const hasTrainedModels = trainedModels.length > 0;
   const templates = templatesData ?? [];
 
+  const router = useRouter();
+
   const onSubmit = async (data: FormData) => {
-    try {
-      setIsLoading(true);
-      console.log("Form data:", data);
-      // TODO: Implement story generation
-      toast.success("Story generation started");
-    } catch (error) {
-      toast.error("Failed to generate story");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+    generateStory({
+      ...data,
+      designId,
+      modelName: trainedModels.find((model) => model.id === data.modelId)
+        ?.modelName,
+    });
   };
 
   return (
@@ -278,10 +305,10 @@ export function GrownUpStoryForm() {
           name="characterDescription"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Main Character Description</FormLabel>
+              <FormLabel>Character Description (Optional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Describe your main character's personality, background, and motivations..."
+                  placeholder="Example: A resilient 30-year-old journalist with a sharp wit and troubled past, struggling with trust issues while pursuing a story that could change everything"
                   className="resize-none"
                   {...field}
                 />
@@ -296,10 +323,14 @@ export function GrownUpStoryForm() {
           name="plotElements"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Key Plot Elements</FormLabel>
+              <FormLabel>Key Plot Elements (Optional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="List major plot points, conflicts, or events (one per line)..."
+                  placeholder="Examples (one per line):
+- A mysterious letter arrives from a long-lost relative
+- The protagonist discovers a hidden ability
+- A betrayal threatens everything they've built
+- An unexpected alliance forms in the face of danger"
                   className="min-h-[100px] resize-none"
                   onChange={(e) => {
                     const elements = e.target.value
@@ -323,10 +354,14 @@ export function GrownUpStoryForm() {
           name="themes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Story Themes</FormLabel>
+              <FormLabel>Story Themes (Optional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="List main themes (one per line)..."
+                  placeholder="Examples (one per line):
+- Redemption and second chances
+- The power of truth in a world of deception
+- Family bonds tested by adversity
+- Personal growth through challenges"
                   className="min-h-[100px] resize-none"
                   onChange={(e) => {
                     const themes = e.target.value
@@ -420,6 +455,69 @@ export function GrownUpStoryForm() {
                 Choose how many pages your story should be
               </FormDescription>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Image Style */}
+        <FormField
+          control={form.control}
+          name="imageStyle"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Illustration Style</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select illustration style" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Classic Styles</SelectLabel>
+                    <SelectItem value="Black and White">
+                      Black and White
+                    </SelectItem>
+                    <SelectItem value="Line Art">Line Art</SelectItem>
+                    <SelectItem value="Pencil Sketch">Pencil Sketch</SelectItem>
+                    <SelectItem value="Charcoal">Charcoal</SelectItem>
+                    <SelectItem value="Ink Drawing">Ink Drawing</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Painting Styles</SelectLabel>
+                    <SelectItem value="Oil Painting">Oil Painting</SelectItem>
+                    <SelectItem value="Watercolor">Watercolor</SelectItem>
+                    <SelectItem value="Acrylic">Acrylic</SelectItem>
+                    <SelectItem value="Gouache">Gouache</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Modern Styles</SelectLabel>
+                    <SelectItem value="Digital Art">Digital Art</SelectItem>
+                    <SelectItem value="Vector Art">Vector Art</SelectItem>
+                    <SelectItem value="Minimalist">Minimalist</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Artistic Styles</SelectLabel>
+                    <SelectItem value="Art Deco">Art Deco</SelectItem>
+                    <SelectItem value="Art Nouveau">Art Nouveau</SelectItem>
+                    <SelectItem value="Impressionist">Impressionist</SelectItem>
+                    <SelectItem value="Expressionist">Expressionist</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Atmospheric Styles</SelectLabel>
+                    <SelectItem value="Film Noir">Film Noir</SelectItem>
+                    <SelectItem value="Gothic">Gothic</SelectItem>
+                    <SelectItem value="Dark Fantasy">Dark Fantasy</SelectItem>
+                    <SelectItem value="Vintage Etching">
+                      Vintage Etching
+                    </SelectItem>
+                    <SelectItem value="Woodcut">Woodcut</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                Choose the visual style for your story illustrations
+              </FormDescription>
             </FormItem>
           )}
         />

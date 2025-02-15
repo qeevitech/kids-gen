@@ -17,7 +17,7 @@ const TrainModelSchema = z.object({
 });
 
 // const WEBHOOK_URL = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NGROK_HOST;
-const WEBHOOK_URL = "https://6256-49-206-0-128.ngrok-free.app";
+const WEBHOOK_URL = "https://fc2b-49-206-0-128.ngrok-free.app";
 
 async function getStorageUrl(fileKey: string) {
   const command = new GetObjectCommand({

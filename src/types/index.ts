@@ -15,11 +15,17 @@ export interface Template {
   id: string;
   name: string;
   thumbnail: string;
-  category: "basic" | "social" | "presentation" | "business";
+  category:
+    | "basic"
+    | "social"
+    | "presentation"
+    | "business"
+    | "grown-ups"
+    | "kids";
   width: number;
   height: number;
-  isPublic: boolean;
-  pages: DesignPage[];
+  isPro: boolean;
+  pages: any[];
 }
 
 export interface Design {

@@ -92,16 +92,46 @@ CREATE TABLE "session" (
 	"expires" timestamp NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "stories" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"design_id" uuid,
+	"title" text NOT NULL,
+	"subtitle" text,
+	"cover_image_prompt" text NOT NULL,
+	"cover_image_url" text,
+	"chapters" jsonb DEFAULT '[]'::jsonb NOT NULL,
+	"language" text NOT NULL,
+	"genre" text,
+	"tone" text,
+	"story_type" text,
+	"image_style" text NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
+	CONSTRAINT "stories_design_id_unique" UNIQUE("design_id")
+);
+--> statement-breakpoint
+CREATE TABLE "story_templates" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text NOT NULL,
+	"description" text NOT NULL,
+	"thumbnail" text NOT NULL,
+	"category" text NOT NULL,
+	"prompt" text NOT NULL,
+	"is_public" boolean DEFAULT true,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE "templates" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"thumbnail" text NOT NULL,
 	"category" text NOT NULL,
-	"elements" jsonb DEFAULT '[]'::jsonb,
+	"pages" jsonb DEFAULT '[]'::jsonb,
 	"width" integer NOT NULL,
 	"height" integer NOT NULL,
 	"is_pro" boolean DEFAULT false,
-	"created_at" timestamp DEFAULT now()
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "user" (
@@ -127,4 +157,5 @@ ALTER TABLE "designs" ADD CONSTRAINT "designs_user_id_user_id_fk" FOREIGN KEY ("
 ALTER TABLE "folders" ADD CONSTRAINT "folders_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "folders" ADD CONSTRAINT "folders_parent_id_folders_id_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."folders"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "models" ADD CONSTRAINT "models_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "session" ADD CONSTRAINT "session_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "stories" ADD CONSTRAINT "stories_design_id_designs_id_fk" FOREIGN KEY ("design_id") REFERENCES "public"."designs"("id") ON DELETE cascade ON UPDATE no action;

@@ -10,6 +10,7 @@ import images from "./images";
 import templates from "./templates";
 import train from "./train";
 import webhooks from "./webhooks";
+import generate from "./generate";
 import authConfig from "@/auth.config";
 
 // Revert to "edge" if planning on running on the edge
@@ -34,6 +35,7 @@ const routes = app
   .route("/assets", assets)
   .route("/templates", templates)
   .route("/webhooks", webhooks)
+  .route("/generate", generate)
   .route("/train", train);
 
 export const GET = handle(app);

@@ -337,3 +337,22 @@ export interface fieldData {
   fieldName: string;
   fieldValue: string;
 }
+
+export interface Page {
+  id: string;
+  elements: any[];
+  thumbnail: string;
+}
+
+export interface Template {
+  id: string;
+  name: string;
+  thumbnail: string;
+  pages: any[];
+  category: string;
+  width: number;
+  height: number;
+  isPro: boolean | null;
+  createdAt: Date;
+  updatedAt: Date;
+}

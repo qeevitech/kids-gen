@@ -26,7 +26,7 @@ const formSchema = z.object({
   modelName: z.string({
     required_error: "Model name is required!",
   }),
-  gender: z.enum(["man", "women"]),
+  gender: z.enum(["man", "women", "boy", "girl"]),
   zipFile: z
     .any()
     .refine((files) => files?.[0] instanceof File, "Please select a valid file")
@@ -156,6 +156,18 @@ const TrainModelForm = () => {
                         <RadioGroupItem value="women" />
                       </FormControl>
                       <FormLabel className="font-normal">Female</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="boy" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Boy</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center space-x-3 space-y-0">
+                      <FormControl>
+                        <RadioGroupItem value="girl" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Girl</FormLabel>
                     </FormItem>
                   </RadioGroup>
                 </FormControl>
