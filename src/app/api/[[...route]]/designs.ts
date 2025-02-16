@@ -82,6 +82,69 @@ const app = new Hono()
       return c.json(design[0]);
     },
   )
+  .delete(
+    "/:id",
+    verifyAuth(),
+    zValidator("param", z.object({ id: z.string() })),
+    async (c) => {
+      const auth = c.get("authUser");
+      const { id } = c.req.valid("param");
+
+      if (!auth.token?.id) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
+
+      const data = await db
+        .delete(designs)
+        .where(and(eq(designs.id, id), eq(designs.userId, auth.token.id)))
+        .returning();
+
+      if (data.length === 0) {
+        return c.json({ error: "Not found" }, 404);
+      }
+
+      return c.json({ data: { id } });
+    },
+  )
+  .post(
+    "/:id/duplicate",
+    verifyAuth(),
+    zValidator("param", z.object({ id: z.string() })),
+    async (c) => {
+      const auth = c.get("authUser");
+      const { id } = c.req.valid("param");
+
+      if (!auth.token?.id) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
+
+      const data = await db
+        .select()
+        .from(designs)
+        .where(and(eq(designs.id, id), eq(designs.userId, auth.token.id)));
+
+      if (data.length === 0) {
+        return c.json({ error: " Not found" }, 404);
+      }
+
+      const design = data[0];
+
+      const duplicateData = await db
+        .insert(designs)
+        .values({
+          name: `Copy of ${design.name}`,
+          pages: design.pages,
+          width: design.width,
+          height: design.height,
+          userId: auth.token.id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+
+      return c.json({ data: duplicateData[0] });
+    },
+  )
   .post("/", verifyAuth(), zValidator("json", designSchema), async (c) => {
     const auth = c.get("authUser");
     const data = c.req.valid("json");

@@ -37,6 +37,8 @@ import { cn } from "@/lib/utils";
 import { useGetTemplates } from "../api/use-get-templates";
 import { useGenerateStory } from "../api/use-generate-story";
 import { TemplateSelector } from "./template-selector";
+import { useEditorsStore } from "../stores/use-editors-store";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   storySubject: z.string().min(1, "Story subject is required"),
@@ -88,12 +90,13 @@ const formSchema = z.object({
   setting: z.string().optional(),
   moralLesson: z.string().optional(),
   modelId: z.string().optional(),
-  templateId: z.string().optional(),
+  templateId: z.string(),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 export function KidsStoryForm({ designId }: { designId: string }) {
+  const setIsGenerating = useEditorsStore((state) => state.setIsGenerating);
   const { mutate: generateStory, isPending: isLoading } = useGenerateStory();
   const router = useRouter();
   const form = useForm<FormData>({
@@ -127,6 +130,7 @@ export function KidsStoryForm({ designId }: { designId: string }) {
   const templates = (templatesData as Template[]) ?? [];
 
   const onSubmit = async (data: FormData) => {
+    setIsGenerating(true);
     generateStory({
       ...data,
       designId,
@@ -288,7 +292,14 @@ export function KidsStoryForm({ designId }: { designId: string }) {
         />
 
         <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? "Generating..." : "Generate Story"}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating Story...
+            </>
+          ) : (
+            "Generate Story"
+          )}
         </Button>
       </form>
     </Form>

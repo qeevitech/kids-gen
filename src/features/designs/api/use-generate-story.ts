@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { client } from "@/lib/hono";
 import { useRouter } from "next/navigation";
+import { useEditorsStore } from "@/features/designs/stores/use-editors-store";
 
 interface GenerateStoryInput {
   designId: string;
@@ -31,6 +32,7 @@ interface GenerateStoryInput {
 }
 
 export const useGenerateStory = () => {
+  const setIsGenerating = useEditorsStore((state) => state.setIsGenerating);
   const router = useRouter();
 
   return useMutation({
@@ -46,14 +48,16 @@ export const useGenerateStory = () => {
       return response.json();
     },
     onSuccess: (result) => {
+      setIsGenerating(false);
       if (result.success) {
+        router.push(`/editor/${result.data.designId}`);
         toast.success("Story generated successfully!");
-        // router.push(`/story/${result.data.id}`);
       } else {
         toast.error(result.error);
       }
     },
     onError: () => {
+      setIsGenerating(false);
       toast.error("Failed to generate story");
     },
   });

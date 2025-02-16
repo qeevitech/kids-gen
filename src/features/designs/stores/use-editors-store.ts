@@ -7,6 +7,7 @@ interface EditorsState {
   pageIds: { [key: number]: string };
   currentPage: number;
   initialData: Design | null;
+  isGenerating: boolean;
 
   setEditor: (pageIndex: number, editor: Editor) => void;
   setPageId: (pageIndex: number, pageId: string) => void;
@@ -15,6 +16,7 @@ interface EditorsState {
   getCurrentEditor: () => Editor | undefined;
   getPageId: (pageIndex: number) => string | undefined;
   updatePages: (pages: Design["pages"]) => void;
+  setIsGenerating: (isGenerating: boolean) => void;
 }
 
 export const useEditorsStore = create<EditorsState>((set, get) => ({
@@ -22,6 +24,7 @@ export const useEditorsStore = create<EditorsState>((set, get) => ({
   pageIds: {},
   currentPage: 0,
   initialData: null,
+  isGenerating: false,
 
   setEditor: (pageIndex, editor) =>
     set((state) => {
@@ -50,4 +53,6 @@ export const useEditorsStore = create<EditorsState>((set, get) => ({
         },
       };
     }),
+
+  setIsGenerating: (isGenerating) => set({ isGenerating }),
 }));

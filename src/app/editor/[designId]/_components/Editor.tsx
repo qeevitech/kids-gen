@@ -18,7 +18,14 @@ import { TemplateSidebar } from "@/features/designs/components/template-sidebar"
 import { RemoveBgSidebar } from "@/features/designs/components/remove-bg-sidebar";
 import { SettingsSidebar } from "@/features/designs/components/settings-sidebar";
 import { Toolbar } from "@/features/designs/components/toolbar";
-import { ChevronUp, ChevronDown, Copy, Trash2, Plus } from "lucide-react";
+import {
+  ChevronUp,
+  ChevronDown,
+  Copy,
+  Trash2,
+  Plus,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   ActiveTool,
@@ -34,6 +41,7 @@ import { Hint } from "@/components/hint";
 import { Footer } from "@/features/designs/components/footer";
 import { TrainModel } from "@/features/designs/components/train-model";
 import { GenerateStory } from "@/features/designs/components/generate-story";
+import { cn } from "@/lib/utils";
 
 interface EditorProps {
   initialData: Design;
@@ -42,6 +50,7 @@ interface EditorProps {
 const Editor = ({ initialData }: EditorProps) => {
   const { mutate } = useUpdateDesign(initialData.id);
   const editorStore = useEditorsStore();
+  const isGenerating = useEditorsStore((state) => state.isGenerating);
 
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
   const [currentPage, setCurrentPage] = useState(initialData.currentPage);
@@ -80,11 +89,7 @@ const Editor = ({ initialData }: EditorProps) => {
           if (!pageId || !canvas) return;
 
           const currentState = canvas.toJSON(JSON_KEYS);
-          const thumbnail = canvas.toDataURL({
-            format: "png",
-            quality: 1,
-            multiplier: 0.1,
-          });
+          const thumbnail = canvas.toDataURL();
 
           return {
             id: pageId,
@@ -143,11 +148,7 @@ const Editor = ({ initialData }: EditorProps) => {
         return {
           id: pageId,
           elements: canvas.toJSON(JSON_KEYS),
-          thumbnail: canvas.toDataURL({
-            format: "png",
-            quality: 0.1,
-            multiplier: 0.1,
-          }),
+          thumbnail: canvas.toDataURL(),
         };
       })
       .filter(
@@ -172,11 +173,7 @@ const Editor = ({ initialData }: EditorProps) => {
     const newPage = {
       id: crypto.randomUUID(),
       elements: currentCanvas.toJSON(JSON_KEYS),
-      thumbnail: currentCanvas.toDataURL({
-        format: "png",
-        quality: 0.1,
-        multiplier: 0.1,
-      }),
+      thumbnail: currentCanvas.toDataURL(),
     };
 
     // Insert new page after the current one
@@ -321,208 +318,224 @@ const Editor = ({ initialData }: EditorProps) => {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <Navbar
-        id={initialData.id}
-        activeTool={activeTool}
-        onChangeActiveTool={onChangeActiveTool}
-      />
-      <div className="absolute top-[68px] flex h-[calc(100%-68px)] w-full">
-        <Sidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
+    <div className="relative h-screen">
+      {isGenerating && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="mt-2 text-sm text-muted-foreground">
+            Generating your story...
+          </p>
+        </div>
+      )}
 
-        <TrainModel
+      <div
+        className={cn(
+          "flex h-full flex-col",
+          isGenerating && "pointer-events-none opacity-50",
+        )}
+      >
+        <Navbar
+          id={initialData.id}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
         />
-        <GenerateStory
-          designId={initialData.id}
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <ShapeSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <FillColorSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <StrokeColorSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <StrokeWidthSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <OpacitySidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <TextSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <FontSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <ImageSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <TemplateSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <FilterSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <AiSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <RemoveBgSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <DrawSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-        <SettingsSidebar
-          activeTool={activeTool}
-          onChangeActiveTool={onChangeActiveTool}
-        />
-
-        <main className="relative flex flex-1 flex-col overflow-auto bg-muted">
-          <Toolbar
+        <div className="absolute top-[68px] flex h-[calc(100%-68px)] w-full">
+          <Sidebar
             activeTool={activeTool}
             onChangeActiveTool={onChangeActiveTool}
-            key={JSON.stringify(
-              editorStore.editors[currentPage]?.canvas.getActiveObject(),
-            )}
           />
-          <div
-            className="h-[calc(100%-154px)] flex-1 bg-muted"
-            ref={containerRef}
-          >
-            <div className="flex flex-col items-center p-8">
-              {initialData.pages.map((page, index) => (
-                <div
-                  key={page.id}
-                  className={`relative cursor-pointer ${
-                    currentPage === index ? "rounded-md" : ""
-                  }`}
-                >
-                  <div className="absolute left-0 top-4 z-10 flex w-full items-center justify-center px-4">
-                    <span className="text-sm text-muted-foreground">
-                      Page {index + 1}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <Hint label="Move up" side="top" sideOffset={10}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMovePageUp(index);
-                          }}
-                          disabled={index === 0}
-                        >
-                          <ChevronUp className="h-4 w-4" />
-                        </Button>
-                      </Hint>
-                      <Hint label="Move down" side="top" sideOffset={10}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMovePageDown(index);
-                          }}
-                          disabled={index === initialData.pages.length - 1}
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </Button>
-                      </Hint>
-                      <Hint label="Duplicate" side="top" sideOffset={10}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDuplicatePage(index);
-                          }}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </Hint>
-                      <Hint label="Delete" side="top" sideOffset={10}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeletePage(index);
-                          }}
-                          disabled={initialData.pages.length === 1}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </Hint>
-                      <Hint label="Add page" side="top" sideOffset={10}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleAddPage(index);
-                          }}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </Hint>
+
+          <TrainModel
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <GenerateStory
+            designId={initialData.id}
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <ShapeSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <FillColorSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <StrokeColorSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <StrokeWidthSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <OpacitySidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <TextSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <FontSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <ImageSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <TemplateSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <FilterSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <AiSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <RemoveBgSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <DrawSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+          <SettingsSidebar
+            activeTool={activeTool}
+            onChangeActiveTool={onChangeActiveTool}
+          />
+
+          <main className="relative flex flex-1 flex-col overflow-auto bg-muted">
+            <Toolbar
+              activeTool={activeTool}
+              onChangeActiveTool={onChangeActiveTool}
+              key={JSON.stringify(
+                editorStore.editors[currentPage]?.canvas.getActiveObject(),
+              )}
+            />
+            <div
+              className="h-[calc(100%-154px)] flex-1 bg-muted"
+              ref={containerRef}
+            >
+              <div className="flex flex-col items-center p-8">
+                {initialData.pages.map((page, index) => (
+                  <div
+                    key={page.id}
+                    className={`relative cursor-pointer ${
+                      currentPage === index ? "rounded-md" : ""
+                    }`}
+                  >
+                    <div className="absolute left-0 top-4 z-10 flex w-full items-center justify-center px-4">
+                      <span className="text-sm text-muted-foreground">
+                        Page {index + 1}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Hint label="Move up" side="top" sideOffset={10}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMovePageUp(index);
+                            }}
+                            disabled={index === 0}
+                          >
+                            <ChevronUp className="h-4 w-4" />
+                          </Button>
+                        </Hint>
+                        <Hint label="Move down" side="top" sideOffset={10}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMovePageDown(index);
+                            }}
+                            disabled={index === initialData.pages.length - 1}
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </Button>
+                        </Hint>
+                        <Hint label="Duplicate" side="top" sideOffset={10}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDuplicatePage(index);
+                            }}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </Hint>
+                        <Hint label="Delete" side="top" sideOffset={10}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeletePage(index);
+                            }}
+                            disabled={initialData.pages.length === 1}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </Hint>
+                        <Hint label="Add page" side="top" sideOffset={10}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddPage(index);
+                            }}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </Hint>
+                      </div>
+                    </div>
+
+                    <div onClick={() => handlePageClick(index)}>
+                      <Page
+                        page={page}
+                        index={index}
+                        width={initialData.width}
+                        height={initialData.height}
+                        currentPage={currentPage}
+                        containerRef={containerRef}
+                        saveCallback={debouncedSave}
+                        clearSelectionCallback={onClearSelection}
+                      />
                     </div>
                   </div>
+                ))}
 
-                  <div onClick={() => handlePageClick(index)}>
-                    <Page
-                      page={page}
-                      index={index}
-                      width={initialData.width}
-                      height={initialData.height}
-                      currentPage={currentPage}
-                      containerRef={containerRef}
-                      saveCallback={debouncedSave}
-                      clearSelectionCallback={onClearSelection}
-                    />
-                  </div>
-                </div>
-              ))}
-
-              <Button
-                variant="outline"
-                size="lg"
-                className="mb-10 mt-4 flex items-center gap-2"
-                onClick={() => handleAddPage()}
-              >
-                <Plus className="h-4 w-4" />
-                Add Page
-              </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="mb-10 mt-4 flex items-center gap-2"
+                  onClick={() => handleAddPage()}
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Page
+                </Button>
+              </div>
             </div>
-          </div>
-          <Footer />
-        </main>
+            <Footer />
+          </main>
+        </div>
       </div>
     </div>
   );

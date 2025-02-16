@@ -3,7 +3,7 @@ import { AlertTriangle, Loader, Crown } from "lucide-react";
 
 // import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
 
-import { ActiveTool, Template } from "@/features/designs/types";
+import { ActiveTool } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
 
@@ -88,7 +88,7 @@ export const TemplateSidebar = ({
               data.map((template) => {
                 const thumbnailSrc =
                   template.thumbnail ||
-                  template.pages?.[0]?.thumbnail ||
+                  (template.pages as any[])?.[0]?.thumbnail ||
                   "/placeholder.png";
                 const isBase64 = thumbnailSrc.startsWith("data:image");
 

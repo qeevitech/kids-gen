@@ -83,7 +83,7 @@ const formSchema = z.object({
     "zh",
   ]),
   modelId: z.string().optional(),
-  templateId: z.string().optional(),
+  templateId: z.string(),
   additionalNotes: z.string().optional(),
   pageCount: z
     .number()

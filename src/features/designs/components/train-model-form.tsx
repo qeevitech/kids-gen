@@ -18,6 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { getPresignedStorageUrl } from "../actions/actions";
 import { useTrainModel } from "../api/use-train-model";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ACCEPTED_ZIP_FILES = ["application/x-zip-compressed", "application/zip"];
 const MAX_FILE_SIZE = 45 * 1024 * 1024; // 45 MB
@@ -114,123 +115,133 @@ const TrainModelForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-24">
-        <fieldset className="grid max-w-5xl gap-6 rounded-lg border bg-background p-4 sm:p-8">
-          <FormField
-            control={form.control}
-            name="modelName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Model Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter model name" {...field} />
-                </FormControl>
-                <FormDescription>
-                  This will be the name of your trained model.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <ScrollArea>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="mb-12 space-y-24"
+        >
+          <fieldset className="grid max-w-5xl gap-6 rounded-lg border bg-background p-4 sm:p-8">
+            <FormField
+              control={form.control}
+              name="modelName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Model Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter model name" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    This will be the name of your trained model.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="gender"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Please select the gender of the images</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="man" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Male</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="women" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Female</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="boy" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Boy</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="girl" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Girl</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Please select the gender of the images</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex flex-col space-y-1"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="man" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Male</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="women" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Female</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="boy" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Boy</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="girl" />
+                        </FormControl>
+                        <FormLabel className="font-normal">Girl</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="zipFile"
-            render={() => (
-              <FormItem>
-                <FormLabel>
-                  Training Data (Zip File) |{" "}
-                  <span className="text-destructive">
-                    Read the requirements below
-                  </span>
-                </FormLabel>
+            <FormField
+              control={form.control}
+              name="zipFile"
+              render={() => (
+                <FormItem>
+                  <FormLabel>
+                    Training Data (Zip File) |{" "}
+                    <span className="text-destructive">
+                      Read the requirements below
+                    </span>
+                  </FormLabel>
 
-                <div className="mb-4 rounded-lg pb-4 text-card-foreground shadow-sm">
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• Upload 10-15 high-quality photos of yourself</li>
-                    <li>• For best results with 12 photos, include:</li>
-                    <ul className="ml-4 mt-1 space-y-1">
-                      <li>- 6 clear face photos (front view, good lighting)</li>
-                      <li>- 3 upper body shots (from head to waist)</li>
-                      <li>- 3 full body photos (head to toe)</li>
-                    </ul>
-                    <li>• Photo requirements:</li>
-                    <ul className="ml-4 mt-1 space-y-1">
-                      <li>- Recent photos</li>
-                      <li>- Clear, well-lit photos with natural expressions</li>
-                      <li>
-                        - Square format (1:1 ratio), minimum 1048x1048 pixels
+                  <div className="mb-4 rounded-lg pb-4 text-card-foreground shadow-sm">
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li>• Upload 10-15 high-quality photos of yourself</li>
+                      <li>• For best results with 12 photos, include:</li>
+                      <ul className="ml-4 mt-1 space-y-1">
+                        <li>
+                          - 6 clear face photos (front view, good lighting)
+                        </li>
+                        <li>- 3 upper body shots (from head to waist)</li>
+                        <li>- 3 full body photos (head to toe)</li>
+                      </ul>
+                      <li>• Photo requirements:</li>
+                      <ul className="ml-4 mt-1 space-y-1">
+                        <li>- Recent photos</li>
+                        <li>
+                          - Clear, well-lit photos with natural expressions
+                        </li>
+                        <li>
+                          - Square format (1:1 ratio), minimum 1048x1048 pixels
+                        </li>
+                        <li>- Variety of outfits and simple backgrounds</li>
+                        <li>- Solo photos only (no other people in frame)</li>
+                        <li>- Avoid hats, sunglasses, or face coverings</li>
+                      </ul>
+                      <li className="text-destructive">
+                        • Important: Package all photos in a single ZIP file
+                        (max 45MB)
                       </li>
-                      <li>- Variety of outfits and simple backgrounds</li>
-                      <li>- Solo photos only (no other people in frame)</li>
-                      <li>- Avoid hats, sunglasses, or face coverings</li>
                     </ul>
-                    <li className="text-destructive">
-                      • Important: Package all photos in a single ZIP file (max
-                      45MB)
-                    </li>
-                  </ul>
-                </div>
+                  </div>
 
-                <FormControl>
-                  <Input type="file" accept=".zip" {...fileRef} />
-                </FormControl>
-                <FormDescription>
-                  Upload a zip file containing your training images (max 45MB).
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormControl>
+                    <Input type="file" accept=".zip" {...fileRef} />
+                  </FormControl>
+                  <FormDescription>
+                    Upload a zip file containing your training images (max
+                    45MB).
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <Button type="submit" className="w-fit">
-            Submit
-          </Button>
-        </fieldset>
-      </form>
+            <Button type="submit" className="w-fit">
+              Submit
+            </Button>
+          </fieldset>
+        </form>
+      </ScrollArea>
     </Form>
   );
 };

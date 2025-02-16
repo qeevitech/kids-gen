@@ -114,7 +114,7 @@ export default function StoryType({ userSelection }: StoryTypeProps) {
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute right-2 top-2 z-20 h-4 w-4 rounded-full bg-primary"
+                className="absolute right-2 top-2 z-20 h-4 w-4 rounded-full bg-white"
               />
             )}
           </motion.div>
