@@ -33,6 +33,8 @@ import StorySubjectInput from "./StorySubjectInput";
 import { client } from "@/lib/hono";
 import { useRouter } from "next/navigation";
 import { useGenerateStory } from "../api/use-generate-story";
+import { TemplateSelector } from "./template-selector";
+import { Template } from "@/types";
 
 const formSchema = z.object({
   storySubject: z.string().min(1, "storySubject is required"),
@@ -146,16 +148,23 @@ export function GrownUpStoryForm({ designId }: { designId: string }) {
 
   const trainedModels = modelsData?.pages.flatMap((page) => page.models) ?? [];
   const hasTrainedModels = trainedModels.length > 0;
-  const templates = templatesData ?? [];
+  const templates = (templatesData as Template[]) ?? [];
 
   const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
+    let modelName = "";
+    if (data.modelId) {
+      const model = trainedModels.find((model) => model.id === data.modelId);
+      modelName = `${process.env.NEXT_PUBLIC_REPLICATE_USER_NAME}/${model?.modelId}:${model?.version}`;
+    }
     generateStory({
       ...data,
       designId,
-      modelName: trainedModels.find((model) => model.id === data.modelId)
-        ?.modelName,
+      modelName,
+      gender:
+        trainedModels.find((model) => model.id === data.modelId)?.gender ||
+        "man",
     });
   };
 
@@ -214,38 +223,13 @@ export function GrownUpStoryForm({ designId }: { designId: string }) {
           control={form.control}
           name="templateId"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Story Template</FormLabel>
-              <div className="grid grid-cols-2 gap-4">
-                {templates.map((template) => (
-                  <Card
-                    key={template.id}
-                    className={cn(
-                      "cursor-pointer transition-all hover:border-primary",
-                      field.value === template.id && "border-2 border-primary",
-                    )}
-                    onClick={() => field.onChange(template.id)}
-                  >
-                    <CardContent className="p-3">
-                      <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                        <Image
-                          src={template.thumbnail}
-                          alt={template.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <p className="mt-2 text-sm font-medium">
-                        {template.name}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <FormDescription>
-                Choose a template to guide your story generation
-              </FormDescription>
-            </FormItem>
+            <TemplateSelector
+              templates={templates}
+              value={field.value}
+              onChange={field.onChange}
+              isLoading={templatesLoading}
+              error={templatesError}
+            />
           )}
         />
 

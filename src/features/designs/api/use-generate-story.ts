@@ -9,6 +9,7 @@ interface GenerateStoryInput {
   modelId?: string;
   templateId?: string;
   modelName?: string;
+  gender: "man" | "women" | "boy" | "girl";
   // Kids specific fields
   storyType?: string;
   imageStyle?: string;

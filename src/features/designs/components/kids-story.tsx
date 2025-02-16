@@ -11,8 +11,8 @@ import AgeGroup from "./kids-form/AgeGroup";
 import StoryMood from "./kids-form/StoryMood";
 import StoryLength from "./kids-form/StoryLength";
 import StoryProtagonist from "./kids-form/StoryProtagonist";
-import { toast } from "sonner";
-import { useState } from "react";
+import { Template } from "@/types";
+
 import { useRouter } from "next/navigation";
 import {
   Select,
@@ -36,6 +36,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useGetTemplates } from "../api/use-get-templates";
 import { useGenerateStory } from "../api/use-generate-story";
+import { TemplateSelector } from "./template-selector";
 
 const formSchema = z.object({
   storySubject: z.string().min(1, "Story subject is required"),
@@ -47,6 +48,7 @@ const formSchema = z.object({
     "Animal Tales",
     "Mystery",
   ]),
+  gender: z.enum(["man", "women", "boy", "girl"]),
   imageStyle: z.enum(["3D Cartoon", "Paper Cut", "Water Color", "Pixel Style"]),
   ageGroup: z.enum(["0-2 Years", "3-5 Years", "5-8 Years"]),
   mood: z.enum([
@@ -109,6 +111,7 @@ export function KidsStoryForm({ designId }: { designId: string }) {
       moralLesson: "",
       modelId: "",
       templateId: "",
+      gender: "boy",
     },
   });
 
@@ -121,12 +124,17 @@ export function KidsStoryForm({ designId }: { designId: string }) {
 
   const trainedModels = modelsData?.pages.flatMap((page) => page.models) ?? [];
   const hasTrainedModels = trainedModels.length > 0;
-  const templates = templatesData ?? [];
+  const templates = (templatesData as Template[]) ?? [];
 
   const onSubmit = async (data: FormData) => {
     generateStory({
       ...data,
       designId,
+      gender:
+        trainedModels.find((model) => model.id === data.modelId)?.gender ||
+        "man",
+      modelName: trainedModels.find((model) => model.id === data.modelId)
+        ?.modelName,
       pageCount: data.length === "Short" ? 3 : data.length === "Medium" ? 5 : 7,
     });
   };
@@ -183,41 +191,15 @@ export function KidsStoryForm({ designId }: { designId: string }) {
           control={form.control}
           name="templateId"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Story Template</FormLabel>
-              <div className="grid grid-cols-2 gap-4">
-                {templates.map((template) => (
-                  <Card
-                    key={template.id}
-                    className={cn(
-                      "cursor-pointer transition-all hover:border-primary",
-                      field.value === template.id && "border-2 border-primary",
-                    )}
-                    onClick={() => field.onChange(template.id)}
-                  >
-                    <CardContent className="p-3">
-                      <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                        <Image
-                          src={template.thumbnail}
-                          alt={template.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <p className="mt-2 text-sm font-medium">
-                        {template.name}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              <FormDescription>
-                Choose a template to guide your story generation
-              </FormDescription>
-            </FormItem>
+            <TemplateSelector
+              templates={templates}
+              value={field.value}
+              onChange={field.onChange}
+              isLoading={templatesLoading}
+              error={templatesError}
+            />
           )}
         />
-
         <FormField
           control={form.control}
           name="storyType"

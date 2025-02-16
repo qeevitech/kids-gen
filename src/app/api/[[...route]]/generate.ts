@@ -2,20 +2,21 @@ import { Hono } from "hono";
 import { verifyAuth } from "@hono/auth-js";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { replicate } from "@/lib/replicate";
 import { supportedLanguages } from "@/lib/languages";
 import { kidsStoryChat, adultStoryChat } from "@/lib/geminiAi";
-import { stories } from "@/db/schema";
+import { stories, designs, templates } from "@/db/schema";
 import { db } from "@/db/drizzle";
 import { imageMeta } from "image-meta";
 import { BUCKET_NAME, s3Client } from "@/lib/cloudflare";
 
 import { randomUUID } from "crypto";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { eq } from "drizzle-orm";
 
 const generateStorySchema = z.object({
   storySubject: z.string(),
+  gender: z.enum(["man", "women", "boy", "girl"]),
   modelId: z.string().optional().default("default"),
   modelName: z.string().optional().default("default"),
   templateId: z.string().optional().default("default"),
@@ -155,6 +156,7 @@ async function generateImage(
   prompt: string,
   modelName: string,
   userId: string,
+  gender: string,
 ) {
   const fluxModel = modelName.startsWith(
     `${process.env.NEXT_PUBLIC_REPLICATE_USER_NAME}/`,
@@ -166,7 +168,7 @@ async function generateImage(
   )
     ? {
         model: "dev",
-        prompt: prompt,
+        prompt: `Image of a ohwx, ${gender}, ${prompt}`,
         lora_scale: 1,
         guidance: 3.5,
         num_outputs: 1,
@@ -265,11 +267,17 @@ const app = new Hono().post(
         response.story_cover.image_prompt,
         data.modelName,
         auth.token.id,
+        data.gender,
       );
 
       // Generate chapter images in parallel
       const chapterImagesPromises = response.chapters.map((chapter: any) =>
-        generateImage(chapter.image_prompt, data.modelName, auth.token?.id!),
+        generateImage(
+          chapter.image_prompt,
+          data.modelName,
+          auth.token?.id!,
+          data.gender,
+        ),
       );
       const chapterImageUrls = await Promise.all(chapterImagesPromises);
 
@@ -285,24 +293,60 @@ const app = new Hono().post(
       console.log(coverImageUrl);
 
       // Save to database
-      const story = await db
-        .insert(stories)
-        .values({
-          designId: data.designId,
-          title: response.story_cover.title,
-          coverImagePrompt: response.story_cover.image_prompt,
-          coverImageUrl,
-          chapters: updatedChapters,
-          language: data.language,
-          imageStyle: data.imageStyle || "default",
-          ...(response.story_cover.subtitle && {
-            subtitle: response.story_cover.subtitle,
-          }),
-          ...(data.genre && { genre: data.genre }),
-          ...(data.tone && { tone: data.tone }),
-          ...(data.storyType && { storyType: data.storyType }),
-        })
-        .returning();
+      const existingStory = await db
+        .select()
+        .from(stories)
+        .where(eq(stories.designId, data.designId))
+        .limit(1)
+        .then((rows) => rows[0]);
+
+      // Update design pages
+      await updateDesignPages(
+        data.designId,
+        data.templateId,
+        response,
+        coverImageUrl || "",
+        chapterImageUrls,
+      );
+
+      // Update or insert story
+      const story = existingStory
+        ? await db
+            .update(stories)
+            .set({
+              title: response.story_cover.title,
+              coverImagePrompt: response.story_cover.image_prompt,
+              coverImageUrl,
+              chapters: updatedChapters,
+              language: data.language,
+              imageStyle: data.imageStyle || "default",
+              ...(response.story_cover.subtitle && {
+                subtitle: response.story_cover.subtitle,
+              }),
+              ...(data.genre && { genre: data.genre }),
+              ...(data.tone && { tone: data.tone }),
+              ...(data.storyType && { storyType: data.storyType }),
+            })
+            .where(eq(stories.id, existingStory.id))
+            .returning()
+        : await db
+            .insert(stories)
+            .values({
+              designId: data.designId,
+              title: response.story_cover.title,
+              coverImagePrompt: response.story_cover.image_prompt,
+              coverImageUrl,
+              chapters: updatedChapters,
+              language: data.language,
+              imageStyle: data.imageStyle || "default",
+              ...(response.story_cover.subtitle && {
+                subtitle: response.story_cover.subtitle,
+              }),
+              ...(data.genre && { genre: data.genre }),
+              ...(data.tone && { tone: data.tone }),
+              ...(data.storyType && { storyType: data.storyType }),
+            })
+            .returning();
 
       return c.json({
         success: true,
@@ -322,5 +366,93 @@ const app = new Hono().post(
     }
   },
 );
+
+async function updateDesignPages(
+  designId: string,
+  templateId: string,
+  storyData: any,
+  coverImageUrl: string,
+  chapterImages: string[],
+) {
+  // Get template
+  const template = (await db
+    .select()
+    .from(templates)
+    .where(eq(templates.id, templateId))
+    .limit(1)
+    .then((rows) => rows[0])) as {
+    pages: Array<{
+      id: string;
+      elements: any;
+    }>;
+  };
+
+  if (!template) throw new Error("Template not found");
+
+  const pages = [];
+
+  // Update cover page
+  const coverPage = {
+    ...template.pages[0],
+    id: crypto.randomUUID(),
+    elements: {
+      ...template.pages[0].elements,
+      objects: template.pages[0].elements.objects.map((obj: any) => {
+        if (obj.type === "image") {
+          return { ...obj, src: coverImageUrl };
+        }
+        if (obj.type === "textbox") {
+          return { ...obj, text: storyData.story_cover.title };
+        }
+        return obj;
+      }),
+    },
+  };
+  pages.push(coverPage);
+
+  // Create chapter pages using template[1] as base
+  const chapterTemplate = template.pages[1];
+  storyData.chapters.forEach((chapter: any, index: number) => {
+    const textboxes = chapterTemplate.elements.objects.filter(
+      (obj: any) => obj.type === "textbox",
+    );
+
+    const chapterPage = {
+      ...chapterTemplate,
+      id: crypto.randomUUID(),
+      elements: {
+        ...chapterTemplate.elements,
+        objects: chapterTemplate.elements.objects.map((obj: any) => {
+          if (obj.type === "image") {
+            return { ...obj, src: chapterImages[index] };
+          }
+          if (obj.type === "textbox") {
+            // If multiple textboxes exist
+            if (textboxes.length > 1) {
+              // First textbox gets chapter title
+              if (obj === textboxes[0]) {
+                return { ...obj, text: chapter.chapter_title };
+              }
+              // Second textbox gets chapter text
+              if (obj === textboxes[1]) {
+                return { ...obj, text: chapter.text };
+              }
+            } else {
+              // If only one textbox, use it for chapter text
+              return { ...obj, text: chapter.text };
+            }
+          }
+          return obj;
+        }),
+      },
+    };
+    pages.push(chapterPage);
+  });
+
+  // Update design with new pages
+  await db.update(designs).set({ pages }).where(eq(designs.id, designId));
+
+  return pages;
+}
 
 export default app;
