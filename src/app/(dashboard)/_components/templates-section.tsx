@@ -31,13 +31,13 @@ export const TemplatesSection = () => {
 
     mutation.mutate(
       {
-        name: `${template.name} project`,
+        name: `${template.name} design`,
         pages: template.pages,
         width: template.width,
         height: template.height,
       },
       {
-        onSuccess: ({ data }) => {
+        onSuccess: (data) => {
           router.push(`/editor/${data.id}`);
         },
       },

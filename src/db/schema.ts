@@ -9,6 +9,7 @@ import {
   integer,
   uuid,
   jsonb,
+  json,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 
@@ -21,6 +22,7 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   password: text("password"),
+  role: text("role").$type<"user" | "admin">().default("user").notNull(),
 });
 
 export const designs = pgTable("designs", {
@@ -260,5 +262,126 @@ export const storiesRelations = relations(stories, ({ one }) => ({
   design: one(designs, {
     fields: [stories.designId],
     references: [designs.id],
+  }),
+}));
+
+export const subscriptions = pgTable("subscription", {
+  id: text("id").primaryKey(),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  status: text("status")
+    .$type<
+      | "trialing"
+      | "active"
+      | "canceled"
+      | "incomplete"
+      | "incomplete_expired"
+      | "past_due"
+      | "unpaid"
+      | "paused"
+    >()
+    .notNull(),
+  price_id: text("price_id").references(() => prices.id),
+  customer_id: text("customer_id").notNull(),
+  quantity: integer("quantity"),
+  cancel_at: timestamp("cancel_at", { mode: "string" }),
+  cancel_at_period_end: boolean("cancel_at_period_end"),
+  canceled_at: timestamp("canceled_at", { mode: "string" }),
+  current_period_start: timestamp("current_period_start", {
+    mode: "string",
+  }).notNull(),
+  current_period_end: timestamp("current_period_end", {
+    mode: "string",
+  }).notNull(),
+  created: timestamp("created", { mode: "string" }).notNull(),
+  ended_at: timestamp("ended_at", { mode: "string" }),
+  trial_start: timestamp("trial_start", { mode: "string" }),
+  trial_end: timestamp("trial_end", { mode: "string" }),
+  metadata: json("metadata"),
+});
+
+export const products = pgTable("products", {
+  id: text("id").primaryKey(),
+  active: boolean("active"),
+  name: text("name"),
+  description: text("description"),
+  image: text("image"),
+  metadata: json("metadata"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const prices = pgTable("prices", {
+  id: text("id").primaryKey(),
+  active: boolean("active"),
+  currency: text("currency"),
+  description: text("description"),
+  interval: text("interval").$type<"day" | "week" | "month" | "year">(),
+  interval_count: integer("interval_count"),
+  metadata: json("metadata"),
+  product_id: text("product_id").references(() => products.id, {
+    onDelete: "cascade",
+  }),
+  trial_period_days: integer("trial_period_days"),
+  type: text("type").$type<"one_time" | "recurring">(),
+  unit_amount: integer("unit_amount"),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+// Add relation to products
+export const productsRelations = relations(products, ({ many }) => ({
+  prices: many(prices),
+}));
+
+// Types for TypeScript
+export type Product = typeof products.$inferSelect;
+export type NewProduct = typeof products.$inferInsert;
+export type Price = typeof prices.$inferSelect;
+export type NewPrice = typeof prices.$inferInsert;
+
+export const credits = pgTable("credits", {
+  id: integer("id").primaryKey(),
+  user_id: text("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  image_generation_count: integer("image_generation_count").default(0),
+  max_image_generation_count: integer("max_image_generation_count").default(0),
+  model_training_count: integer("model_training_count").default(0),
+  max_model_training_count: integer("max_model_training_count").default(0),
+  created_at: timestamp("created_at").defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow(),
+});
+
+// Add relation to users
+export const userRelations = relations(users, ({ one }) => ({
+  credits: one(credits, {
+    fields: [users.id],
+    references: [credits.user_id],
+  }),
+}));
+
+// Types for TypeScript
+export type Credit = typeof credits.$inferSelect;
+export type NewCredit = typeof credits.$inferInsert;
+
+// Type for TypeScript
+export type Subscription = typeof subscriptions.$inferSelect;
+export type NewSubscription = typeof subscriptions.$inferInsert;
+
+// Type for TypeScript
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+// Add subscription relations
+export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
+  price: one(prices, {
+    fields: [subscriptions.price_id],
+    references: [prices.id],
+  }),
+  user: one(users, {
+    fields: [subscriptions.user_id],
+    references: [users.id],
   }),
 }));

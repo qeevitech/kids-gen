@@ -17,7 +17,7 @@ interface DesignResponse {
 const DEFAULT_DESIGN = {
   id: crypto.randomUUID(),
   name: "Instagram Carousel",
-  thumbnail: "/templates/instagram-carousel.png",
+  thumbnail: "",
   category: "social",
   width: 1080,
   height: 1080,
@@ -101,7 +101,8 @@ export const useCreateDesign = () => {
       toast.success("Design created");
       queryClient.invalidateQueries({ queryKey: ["designs"] });
     },
-    onError: () => {
+    onError: (e: any) => {
+      console.log(e);
       toast.error("Failed to create design");
     },
   });

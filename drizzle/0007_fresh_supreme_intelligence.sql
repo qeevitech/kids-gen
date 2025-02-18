@@ -1,0 +1,2 @@
+ALTER TABLE "subscription" ADD COLUMN "customer_id" text NOT NULL;--> statement-breakpoint
+ALTER TABLE "subscription" ADD CONSTRAINT "subscription_price_id_prices_id_fk" FOREIGN KEY ("price_id") REFERENCES "public"."prices"("id") ON DELETE no action ON UPDATE no action;

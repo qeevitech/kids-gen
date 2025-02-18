@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoTriangle } from "react-icons/io5";
-import { FaDiamond } from "react-icons/fa6";
+import { FaDiamond, FaRectangleAd } from "react-icons/fa6";
 import { FaCircle, FaSquare } from "react-icons/fa";
 import { ChevronLeft } from "lucide-react";
 
@@ -19,7 +19,13 @@ interface ShapeSidebarProps {
   onChangeActiveTool: (tool: ActiveTool) => void;
 }
 
-type Category = "all" | "basic" | "masks" | "speech-bubbles" | "complex";
+type Category =
+  | "all"
+  | "basic"
+  | "masks"
+  | "speech-bubbles"
+  | "complex"
+  | "text-boxes";
 
 export const ShapeSidebar = ({
   activeTool,
@@ -42,6 +48,11 @@ export const ShapeSidebar = ({
       label: "Triangle",
     },
     { icon: FaDiamond, onClick: () => editor?.addDiamond(), label: "Diamond" },
+    {
+      icon: FaRectangleAd,
+      onClick: () => editor?.addRectangle(),
+      label: "Rectangle",
+    },
   ];
 
   const masks = [
@@ -67,6 +78,70 @@ export const ShapeSidebar = ({
 
     { src: "/shapes/speech-bubbles/jagged-burst.png", label: "Jagged Burst" },
     { src: "/shapes/speech-bubbles/cloud-dialog.png", label: "Cloud Dialog" },
+  ];
+
+  const moreTextBoxes = [
+    {
+      src: "/shapes/text-boxes/scalloped-frame.png",
+      label: "Scalloped Frame",
+      // Prompt: "Decorative scalloped frame text box with black border, vintage style, UI element on white background"
+    },
+    {
+      src: "/shapes/text-boxes/dotted-rect.png",
+      label: "Dotted Rectangle",
+      // Prompt: "Rectangle text box with dotted black border, minimal UI element on white background"
+    },
+    {
+      src: "/shapes/text-boxes/notebook-paper.png",
+      label: "Notebook Paper",
+      // Prompt: "Notebook paper style text box with blue lines and red margin, nostalgic school paper look, UI element"
+    },
+    {
+      src: "/shapes/text-boxes/wavy-banner.png",
+      label: "Wavy Banner",
+      // Prompt: "Wavy banner text box with gentle curves, playful design, UI element on white background"
+    },
+    {
+      src: "/shapes/text-boxes/torn-paper.png",
+      label: "Torn Paper",
+      // Prompt: "Torn paper effect text box with rough edges, white background with subtle shadow, UI element"
+    },
+    {
+      src: "/shapes/text-boxes/gradient-card.png",
+      label: "Gradient Card",
+      // Prompt: "Soft gradient background text card from purple to blue, rounded corners, modern UI element"
+    },
+  ];
+
+  const textBoxes = [
+    {
+      src: "/shapes/text-boxes/yellow-sticky.png",
+      label: "Yellow Sticky",
+    },
+    {
+      src: "/shapes/text-boxes/yellow-sticky-long.png",
+      label: "Yellow Banner",
+    },
+    {
+      src: "/shapes/text-boxes/blue-scallop.png",
+      label: "Blue Scallop",
+    },
+    {
+      src: "/shapes/text-boxes/blue-scallop-large.png",
+      label: "Large Scallop",
+    },
+    {
+      src: "/shapes/text-boxes/black-outline.png",
+      label: "Black Outline",
+    },
+    {
+      src: "/shapes/text-boxes/black-outline-rounded.png",
+      label: "Rounded Outline",
+    },
+    {
+      src: "/shapes/text-boxes/black-jagged.png",
+      label: "Jagged Edge",
+    },
   ];
 
   const handleImageClick = (src: string) => {
@@ -105,26 +180,7 @@ export const ShapeSidebar = ({
             ))}
           </div>
         );
-      case "masks":
-        const maskItems = isPreview ? getPreviewItems(masks) : masks;
-        return (
-          <div className="grid grid-cols-3 gap-4">
-            {maskItems.map((mask, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className="h-24 w-full p-2"
-                onClick={() => handleImageClick(mask.src)}
-              >
-                <img
-                  src={mask.src}
-                  alt={mask.label}
-                  className="h-full w-full object-contain"
-                />
-              </Button>
-            ))}
-          </div>
-        );
+
       case "speech-bubbles":
         const bubbleItems = isPreview
           ? getPreviewItems(speechBubbles)
@@ -141,6 +197,26 @@ export const ShapeSidebar = ({
                 <img
                   src={`${NEXT_R2_URL}${bubble.src}` || "/placeholder.svg"}
                   alt={bubble.label}
+                  className="h-full w-full object-contain"
+                />
+              </Button>
+            ))}
+          </div>
+        );
+      case "text-boxes":
+        const textBoxItems = isPreview ? getPreviewItems(textBoxes) : textBoxes;
+        return (
+          <div className="grid grid-cols-3 gap-4">
+            {textBoxItems.map((box, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className="h-24 w-full p-2"
+                onClick={() => handleImageClick(box.src)}
+              >
+                <img
+                  src={`${NEXT_R2_URL}${box.src}` || "/placeholder.svg"}
+                  alt={box.label}
                   className="h-full w-full object-contain"
                 />
               </Button>
@@ -212,19 +288,19 @@ export const ShapeSidebar = ({
 
             <div>
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-semibold">Masks</h3>
+                <h3 className="font-semibold">Text Boxes</h3>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    setSelectedCategory("masks");
+                    setSelectedCategory("text-boxes");
                     setShowAll(true);
                   }}
                 >
                   Show All
                 </Button>
               </div>
-              {renderCategory("masks", true)}
+              {renderCategory("text-boxes", true)}
             </div>
           </div>
         ) : (

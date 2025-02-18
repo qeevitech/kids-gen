@@ -11,6 +11,7 @@ import templates from "./templates";
 import train from "./train";
 import webhooks from "./webhooks";
 import generate from "./generate";
+import subscriptions from "./subscriptions";
 import authConfig from "@/auth.config";
 
 // Revert to "edge" if planning on running on the edge
@@ -36,6 +37,7 @@ const routes = app
   .route("/templates", templates)
   .route("/webhooks", webhooks)
   .route("/generate", generate)
+  .route("/subscriptions", subscriptions)
   .route("/train", train);
 
 export const GET = handle(app);

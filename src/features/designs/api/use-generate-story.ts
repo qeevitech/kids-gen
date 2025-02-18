@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { client } from "@/lib/hono";
 import { useRouter } from "next/navigation";
@@ -32,6 +32,7 @@ interface GenerateStoryInput {
 }
 
 export const useGenerateStory = () => {
+  const queryClient = useQueryClient();
   const setIsGenerating = useEditorsStore((state) => state.setIsGenerating);
   const router = useRouter();
 
@@ -50,7 +51,11 @@ export const useGenerateStory = () => {
     onSuccess: (result) => {
       setIsGenerating(false);
       if (result.success) {
-        router.push(`/editor/${result.data.designId}`);
+        // router.push(`/editor/${result.data.designId}`);
+        queryClient.invalidateQueries({ queryKey: ["designs"] });
+        queryClient.invalidateQueries({
+          queryKey: ["design", { id: result.data.designId }],
+        });
         toast.success("Story generated successfully!");
       } else {
         toast.error(result.error);

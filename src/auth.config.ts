@@ -11,6 +11,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
 import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
+import { Adapter } from "next-auth/adapters";
 
 const CredentialsSchema = z.object({
   email: z.string().email(),
@@ -30,7 +31,7 @@ declare module "@auth/core/jwt" {
 }
 
 export default {
-  adapter: DrizzleAdapter(db),
+  adapter: DrizzleAdapter(db) as Adapter,
   providers: [
     Credentials({
       credentials: {
@@ -76,10 +77,22 @@ export default {
   session: {
     strategy: "jwt",
   },
+  events: {
+    async createUser({ user }) {
+      const params = {
+        name: user.name!,
+        email: user.email!,
+      };
+      // await sendWelcomeEmail(params); // <-- send welcome email
+    },
+  },
   callbacks: {
     session({ session, token }) {
       if (token.id) {
         session.user.id = token.id;
+        session.user.name = token.name!;
+        session.user.email = token.email!;
+        session.user.role = token.role!;
       }
 
       return session;
@@ -87,6 +100,9 @@ export default {
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.role = user.role;
       }
 
       return token;

@@ -1,6 +1,5 @@
 import Link from "next/link";
-import type { LucideIcon } from "lucide-react";
-
+import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SidebarItemProps {
@@ -8,27 +7,38 @@ interface SidebarItemProps {
   label: string;
   href: string;
   isActive?: boolean;
+  isExternal?: boolean;
   onClick?: () => void;
-};
+}
 
 export const SidebarItem = ({
   icon: Icon,
   label,
   href,
   isActive,
+  isExternal,
   onClick,
 }: SidebarItemProps) => {
+  const Component = isExternal ? "a" : Link;
+
   return (
-    <Link href={href} onClick={onClick}>
-      <div className={cn(
-        "flex items-center px-3 py-3 rounded-xl bg-transparent hover:bg-white transition",
-        isActive && "bg-white",
-      )}>
-        <Icon className="size-4 mr-2 stroke-2" />
-        <span className="text-sm font-medium">
-          {label}
-        </span>
-      </div>
-    </Link>
+    <Component
+      href={href}
+      onClick={onClick}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
+      className={cn(
+        "flex items-center gap-x-2 pl-6 text-sm font-[500] text-slate-500 transition-all hover:bg-slate-300/20 hover:text-slate-600",
+        "rounded-lg py-4",
+        isActive &&
+          "bg-purple-200/20 text-purple-700 hover:bg-purple-200/20 hover:text-purple-700",
+      )}
+    >
+      <Icon
+        size={22}
+        className={cn("text-slate-500", isActive && "text-purple-700")}
+      />
+      {label}
+    </Component>
   );
 };
