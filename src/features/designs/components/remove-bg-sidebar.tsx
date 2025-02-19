@@ -1,18 +1,16 @@
 import Image from "next/image";
 import { AlertTriangle } from "lucide-react";
-
-// import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
-
+import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
 import { ActiveTool } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
-
+import { toast } from "sonner";
 import { useRemoveBg } from "@/features/ai/api/use-remove-bg";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEditorsStore } from "../stores/use-editors-store";
+import { useCreditsStore } from "../stores/use-credits-store";
 
 interface RemoveBgSidebarProps {
   activeTool: ActiveTool;
@@ -23,8 +21,11 @@ export const RemoveBgSidebar = ({
   activeTool,
   onChangeActiveTool,
 }: RemoveBgSidebarProps) => {
+  const imageGenerationCount = useCreditsStore(
+    (state) => state.imageGenerationCount,
+  );
   const editor = useEditorsStore((state) => state.getCurrentEditor());
-  // const { shouldBlock, triggerPaywall } = usePaywall();
+  const { shouldBlock, triggerPaywall } = usePaywall();
   const mutation = useRemoveBg();
 
   const selectedObject = editor?.selectedObjects[0];
@@ -37,18 +38,23 @@ export const RemoveBgSidebar = ({
   };
 
   const onClick = () => {
-    // if (shouldBlock) {
-    //   triggerPaywall();
-    //   return;
-    // }
+    if (shouldBlock) {
+      triggerPaywall();
+      return;
+    }
+
+    if (imageGenerationCount === 0) {
+      toast.error("No credits remaining");
+      return;
+    }
 
     mutation.mutate(
       {
         image: imageSrc,
       },
       {
-        onSuccess: ({ data }) => {
-          editor?.addImage(data);
+        onSuccess: ({ url }) => {
+          editor?.addImage(url);
         },
       },
     );

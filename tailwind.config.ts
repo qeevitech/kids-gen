@@ -51,6 +51,17 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        brand: {
+          primary: "hsl(var(--brand-primary))",
+          secondary: "hsl(var(--brand-secondary))",
+          tertiary: "hsl(var(--brand-tertiary))",
+        },
+        "bg-light": "hsl(var(--background-light))",
+        "bg-white": "hsl(var(--background-white))",
+        "bg-dark": "hsl(var(--background-dark))",
+        "text-primary": "hsl(var(--text-primary))",
+        "text-secondary": "hsl(var(--text-secondary))",
+        "text-light": "hsl(var(--text-light))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -153,6 +164,13 @@ export default {
         syncopate: ["Syncopate", "sans-serif"],
         "chakra-petch": ["Chakra Petch", "sans-serif"],
         teko: ["Teko", "sans-serif"],
+        heading: ["var(--font-outfit)", "system-ui"],
+        body: ["var(--font-inter)", "system-ui"],
+        accent: ["var(--font-gaegu)", "cursive"],
+      },
+      backgroundImage: {
+        "gradient-brand":
+          "linear-gradient(to bottom, hsl(var(--gradient-start)), hsl(var(--gradient-end)))",
       },
     },
   },

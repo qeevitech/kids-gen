@@ -1,11 +1,12 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 import { ActiveTool } from "@/features/designs/types";
 import { ToolSidebarClose } from "@/features/designs/components/tool-sidebar-close";
 import { ToolSidebarHeader } from "@/features/designs/components/tool-sidebar-header";
-
+import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
+import { useGetCredits } from "@/features/subscriptions/api/use-get-credits";
+import { useCreditsStore } from "@/features/designs/stores/use-credits-store";
 import { useGenerateImage } from "@/features/ai/api/use-generate-image";
-
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,24 +23,41 @@ export const AiSidebar = ({
   onChangeActiveTool,
 }: AiSidebarProps) => {
   const editor = useEditorsStore((state) => state.getCurrentEditor());
-  // const { shouldBlock, triggerPaywall } = usePaywall();
+  const imageGenerationCount = useCreditsStore(
+    (state) => state.imageGenerationCount,
+  );
+  const { shouldBlock, triggerPaywall } = usePaywall();
   const mutation = useGenerateImage();
+  const { data: credits } = useGetCredits();
+  const { setImageGenerationCount, decrementImageGenerationCount } =
+    useCreditsStore();
 
   const [value, setValue] = useState("");
+
+  useEffect(() => {
+    if (credits?.image_generation_count) {
+      setImageGenerationCount(credits.image_generation_count);
+    }
+  }, [credits, setImageGenerationCount]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // if (shouldBlock) {
-    //   triggerPaywall();
-    //   return;
-    // }
+    if (shouldBlock) {
+      triggerPaywall();
+      return;
+    }
+    if (imageGenerationCount === 0) {
+      toast.error("No credits remaining");
+      return;
+    }
 
     mutation.mutate(
       { prompt: value },
       {
-        onSuccess: ({ data }) => {
-          editor?.addImage(data);
+        onSuccess: ({ url }) => {
+          editor?.addImage(url);
+          decrementImageGenerationCount();
         },
       },
     );
@@ -69,13 +87,18 @@ export const AiSidebar = ({
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />
-          <Button
-            disabled={mutation.isPending}
-            type="submit"
-            className="w-full"
-          >
-            Generate
-          </Button>
+          <div className="space-y-2">
+            <Button
+              disabled={mutation.isPending}
+              type="submit"
+              className="w-full"
+            >
+              Generate
+            </Button>
+            <p className="text-center text-sm text-muted-foreground">
+              {imageGenerationCount ?? 0} generations remaining
+            </p>
+          </div>
         </form>
       </ScrollArea>
       <ToolSidebarClose onClick={onClose} />

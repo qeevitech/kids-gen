@@ -4,6 +4,11 @@ import { verifyAuth } from "@hono/auth-js";
 import { zValidator } from "@hono/zod-validator";
 
 import { replicate } from "@/lib/replicate";
+import { uploadToCloudflare } from "@/lib/image";
+import {
+  checkImageGenerationCredits,
+  decrementImageGenerationCredits,
+} from "@/lib/admin";
 
 const app = new Hono()
   .post(
@@ -17,7 +22,16 @@ const app = new Hono()
     ),
     async (c) => {
       const { image } = c.req.valid("json");
+      const auth = c.get("authUser");
+      if (!auth.token?.id) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
 
+      try {
+        await checkImageGenerationCredits(auth.token?.id);
+      } catch (error) {
+        return c.json({ error: "Insufficient credits" }, 400);
+      }
       const input = {
         image: image,
       };
@@ -28,8 +42,11 @@ const app = new Hono()
       );
 
       const res = output as string;
+      const imageUrl = await uploadToCloudflare(res, auth.token?.id);
 
-      return c.json({ data: res });
+      await decrementImageGenerationCredits(auth.token?.id);
+
+      return c.json({ url: imageUrl });
     },
   )
   .post(
@@ -43,25 +60,43 @@ const app = new Hono()
     ),
     async (c) => {
       const { prompt } = c.req.valid("json");
+      const auth = c.get("authUser");
+      if (!auth.token?.id) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
 
+      try {
+        await checkImageGenerationCredits(auth.token?.id);
+      } catch (error) {
+        return c.json({ error: "Insufficient credits" }, 400);
+      }
+
+      const fluxModel = "black-forest-labs/flux-schnell";
       const input = {
-        cfg: 3.5,
-        steps: 28,
         prompt: prompt,
-        aspect_ratio: "3:2",
-        output_format: "webp",
-        output_quality: 90,
-        negative_prompt: "",
-        prompt_strength: 0.85,
+        go_fast: true,
+        guidance: 3.5,
+        megapixels: "1",
+        num_outputs: 1,
+        aspect_ratio: "1:1",
+        output_format: "png",
+        output_quality: 80,
+        prompt_strength: 0.8,
+        num_inference_steps: 4,
       };
 
-      const output = await replicate.run("stability-ai/stable-diffusion-3", {
+      const output = (await replicate.run(fluxModel as `${string}/${string}`, {
         input,
-      });
+      })) as string[];
+      if (!output?.[0]) {
+        throw new Error("No image generated");
+      }
 
-      const res = output as Array<string>;
+      // const res = output as Array<string>;
+      const imageUrl = await uploadToCloudflare(output[0], auth.token?.id);
+      await decrementImageGenerationCredits(auth.token?.id);
 
-      return c.json({ data: res[0] });
+      return c.json({ url: imageUrl });
     },
   );
 

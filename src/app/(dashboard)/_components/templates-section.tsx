@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Loader, TriangleAlert } from "lucide-react";
 
-// import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
+import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
 
 import {
   ResponseType,
@@ -14,7 +14,7 @@ import { useCreateDesign } from "@/features/designs/api/use-create-design";
 import { TemplateCard } from "./template-card";
 
 export const TemplatesSection = () => {
-  // const { shouldBlock, triggerPaywall } = usePaywall();
+  const { shouldBlock, triggerPaywall } = usePaywall();
   const router = useRouter();
   const mutation = useCreateDesign();
 
@@ -28,6 +28,8 @@ export const TemplatesSection = () => {
     //   triggerPaywall();
     //   return;
     // }
+    triggerPaywall();
+    return;
 
     mutation.mutate(
       {

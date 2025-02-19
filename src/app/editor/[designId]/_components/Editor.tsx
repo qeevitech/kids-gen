@@ -42,6 +42,8 @@ import { Footer } from "@/features/designs/components/footer";
 import { TrainModel } from "@/features/designs/components/train-model";
 import { GenerateStory } from "@/features/designs/components/generate-story";
 import { cn } from "@/lib/utils";
+import { useGetCredits } from "@/features/subscriptions/api/use-get-credits";
+import { useCreditsStore } from "@/features/designs/stores/use-credits-store";
 
 interface EditorProps {
   initialData: Design;
@@ -58,11 +60,23 @@ const Editor = ({ initialData }: EditorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   // Get fresh editors state
   const editors = useEditorsStore((state) => state.editors);
+  const { data: credits } = useGetCredits();
+  const { setImageGenerationCount, decrementImageGenerationCount } =
+    useCreditsStore();
 
   // Initialize store with data
   useEffect(() => {
     editorStore.setInitialData(initialData);
   }, [initialData]);
+
+  useEffect(() => {
+    if (credits?.image_generation_count) {
+      setImageGenerationCount(credits.image_generation_count);
+    }
+    if (credits?.model_training_count) {
+      setImageGenerationCount(credits.model_training_count);
+    }
+  }, [credits, setImageGenerationCount]);
 
   const onClearSelection = useCallback(() => {
     if (selectionDependentTools.includes(activeTool)) {

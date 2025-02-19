@@ -9,10 +9,12 @@ export const checkIsActive = (
 
   if (
     subscription &&
-    subscription.priceId &&
-    subscription.currentPeriodEnd
+    subscription.price_id &&
+    subscription.current_period_end
   ) {
-    active = subscription.currentPeriodEnd.getTime() + DAY_IN_MS > Date.now();
+    active =
+      new Date(subscription.current_period_end).getTime() + DAY_IN_MS >
+      Date.now();
   }
 
   return active;

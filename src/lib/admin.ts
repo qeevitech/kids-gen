@@ -1,6 +1,12 @@
 import { stripe } from "@/lib/stripe/config";
 import { db } from "@/db/drizzle";
-import { products, prices, type Price, subscriptions } from "@/db/schema";
+import {
+  products,
+  prices,
+  type Price,
+  subscriptions,
+  credits,
+} from "@/db/schema";
 import Stripe from "stripe";
 import { eq } from "drizzle-orm";
 import type { Stripe as StripeType } from "stripe";
@@ -124,6 +130,7 @@ const deletePriceRecord = async (price: Stripe.Price) => {
 export async function manageSubscriptionStatusChange(
   subscriptionId: string,
   customerId: string,
+  metadata: Record<string, string>,
   createAction = false,
 ) {
   try {
@@ -134,7 +141,7 @@ export async function manageSubscriptionStatusChange(
     const subscriptionData = {
       id: subscription.id,
       customer_id: customerId,
-      user_id: subscription.metadata.userId,
+      user_id: metadata.userId,
       status: subscription.status,
       price_id: subscription.items.data[0].price.id,
       cancel_at_period_end: subscription.cancel_at_period_end,
@@ -175,6 +182,108 @@ export async function manageSubscriptionStatusChange(
     console.error("Error managing subscription status change:", error);
     throw error;
   }
+}
+
+export async function updateUserCredits(
+  userId: string,
+  metadata: Record<string, string>,
+) {
+  try {
+    await db
+      .update(credits)
+      .set({
+        image_generation_count: Number(metadata.image_generation_count) || 0,
+        model_training_count: Number(metadata.model_training_count) || 0,
+        max_image_generation_count:
+          Number(metadata.image_generation_count) || 0,
+        max_model_training_count: Number(metadata.model_training_count) || 0,
+        updated_at: new Date(),
+      })
+      .where(eq(credits.user_id, userId));
+
+    console.log(`Credits updated for user [${userId}]`);
+  } catch (error) {
+    console.error("Error updating user credits:", error);
+    throw new Error(
+      `Credits update failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
+}
+
+export async function checkModelTrainingCredits(userId: string) {
+  const [userCredits] = await db
+    .select()
+    .from(credits)
+    .where(eq(credits.user_id, userId));
+
+  if (!userCredits) {
+    throw new Error("No credits found");
+  }
+
+  const remainingCredits = userCredits.model_training_count ?? 0;
+
+  if (remainingCredits <= 0) {
+    throw new Error("Insufficient model training credits");
+  }
+
+  return remainingCredits;
+}
+
+export async function checkImageGenerationCredits(userId: string) {
+  const [userCredits] = await db
+    .select()
+    .from(credits)
+    .where(eq(credits.user_id, userId));
+
+  if (!userCredits) {
+    throw new Error("No credits found");
+  }
+
+  const remainingCredits = userCredits.image_generation_count ?? 0;
+
+  if (remainingCredits <= 0) {
+    throw new Error("Insufficient image generation credits");
+  }
+
+  return remainingCredits;
+}
+
+export async function decrementModelTrainingCredits(userId: string) {
+  const [userCredits] = await db
+    .select()
+    .from(credits)
+    .where(eq(credits.user_id, userId));
+
+  if (!userCredits) {
+    throw new Error("No credits found");
+  }
+
+  await db
+    .update(credits)
+    .set({
+      model_training_count: (userCredits.model_training_count ?? 0) - 1,
+      updated_at: new Date(),
+    })
+    .where(eq(credits.user_id, userId));
+}
+
+export async function decrementImageGenerationCredits(userId: string) {
+  const [userCredits] = await db
+    .select()
+    .from(credits)
+    .where(eq(credits.user_id, userId));
+
+  if (!userCredits) {
+    throw new Error("No credits found");
+  }
+
+  await db
+    .update(credits)
+    .set({
+      image_generation_count: (userCredits.image_generation_count ?? 0) - 1,
+      updated_at: new Date(),
+    })
+    .where(eq(credits.user_id, userId));
 }
 
 export {

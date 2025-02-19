@@ -38,6 +38,25 @@ body {
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /* New Brand Colors */
+    --brand-primary: 269 84% 58%; /* Deep purple */
+    --brand-secondary: 35 92% 51%; /* Warm amber */
+    --brand-tertiary: 158 64% 40%; /* Emerald */
+
+    /* Background variations */
+    --background-light: 217 24% 98%;
+    --background-white: 0 0% 100%;
+    --background-dark: 217 19% 27%;
+
+    /* Text colors */
+    --text-primary: 217 19% 27%;
+    --text-secondary: 217 19% 47%;
+    --text-light: 217 24% 98%;
+
+    /* Gradient stops */
+    --gradient-start: 269 84% 98%;
+    --gradient-end: 0 0% 100%;
   }
 
   .dark {
@@ -68,6 +87,25 @@ body {
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    /* Dark mode brand colors */
+    --brand-primary: 269 84% 68%;
+    --brand-secondary: 35 92% 61%;
+    --brand-tertiary: 158 64% 50%;
+
+    /* Dark mode backgrounds */
+    --background-light: 217 24% 12%;
+    --background-white: 217 24% 10%;
+    --background-dark: 217 19% 17%;
+
+    /* Dark mode text */
+    --text-primary: 217 24% 98%;
+    --text-secondary: 217 19% 77%;
+    --text-light: 217 24% 98%;
+
+    /* Dark mode gradient */
+    --gradient-start: 269 84% 18%;
+    --gradient-end: 217 24% 10%;
   }
 }
 

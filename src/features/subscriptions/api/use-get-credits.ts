@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono";
 
 export type UserCredits = {
-  id: number;
+  id: string;
   user_id: string;
   image_generation_count: number;
   max_image_generation_count: number;

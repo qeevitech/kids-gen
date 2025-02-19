@@ -12,6 +12,7 @@ import {
   deletePriceRecord,
   deleteProductRecord,
   manageSubscriptionStatusChange,
+  updateUserCredits,
   upsertPriceRecord,
   upsertProductRecord,
 } from "@/lib/admin";
@@ -27,6 +28,7 @@ const relevantEvents = new Set([
   "price.updated",
   "price.deleted",
   "checkout.session.completed",
+  "invoice.payment_succeeded",
   "customer.subscription.created",
   "customer.subscription.updated",
   "customer.subscription.deleted",
@@ -51,7 +53,7 @@ const app = new Hono()
 
     const session = await stripe.billingPortal.sessions.create({
       customer: subscription.customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}`,
+      return_url: `${process.env.WEBHOOK_URL}/billing`,
     });
 
     if (!session.url) {
@@ -59,6 +61,32 @@ const app = new Hono()
     }
 
     return c.json({ data: session.url });
+  })
+  .get("/plan", verifyAuth(), async (c) => {
+    const auth = c.get("authUser");
+
+    if (!auth.token?.id) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    try {
+      const [subscription] = await db
+        .select()
+        .from(subscriptions)
+        .where(eq(subscriptions.user_id, auth.token.id));
+
+      const active = checkIsActive(subscription);
+
+      return c.json({
+        data: {
+          ...subscription,
+          active,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching subscription:", error);
+      return c.json({ error: "Failed to fetch subscription" }, 500);
+    }
   })
   .get("/current", verifyAuth(), async (c) => {
     const auth = c.get("authUser");
@@ -191,39 +219,62 @@ const app = new Hono()
           case "product.deleted":
             await deleteProductRecord(event.data.object as Stripe.Product);
             break;
-          case "customer.subscription.created":
-          case "customer.subscription.updated":
-          case "customer.subscription.deleted":
-            const subscription = event.data.object as Stripe.Subscription;
-            await manageSubscriptionStatusChange(
-              subscription.id,
+          // case "customer.subscription.created":
+          // case "customer.subscription.updated":
+          // case "customer.subscription.deleted":
+          //   const subscription = event.data.object as Stripe.Subscription;
+          //   await manageSubscriptionStatusChange(
+          //     subscription.id,
 
-              subscription.customer as string,
-              event.type === "customer.subscription.created",
-            );
-            break;
+          //     subscription.customer as string,
+          //     event.type === "customer.subscription.created",
+          //   );
+          //   break;
           case "checkout.session.completed":
             const checkoutSession = event.data
               .object as Stripe.Checkout.Session;
+            if (!checkoutSession?.metadata?.userId) {
+              return c.json({ error: "Invalid session" }, 400);
+            }
             if (checkoutSession.mode === "subscription") {
               const subscriptionId = checkoutSession.subscription;
               await manageSubscriptionStatusChange(
                 subscriptionId as string,
                 checkoutSession.customer as string,
+                checkoutSession.metadata as Record<string, string>,
                 true,
               );
 
               // update credits
             }
-            // if (
-            //   checkoutSession.status === "complete" &&
-            //   checkoutSession.payment_status === "paid"
-            // ) {
-            //   await updateUserCredits(
-            //     checkoutSession.client_reference_id as string,
-            //     checkoutSession.metadata,
-            //   );
-            // }
+            if (
+              checkoutSession.status === "complete" &&
+              checkoutSession.payment_status === "paid"
+            ) {
+              await updateUserCredits(
+                checkoutSession.metadata.userId as string,
+                checkoutSession.metadata,
+              );
+            }
+            break;
+          case "invoice.payment_succeeded":
+            const subscription = await stripe.subscriptions.retrieve(
+              session.subscription as string,
+            );
+
+            if (!session?.metadata?.userId) {
+              return c.json({ error: "Invalid session" }, 400);
+            }
+
+            await db
+              .update(subscriptions)
+              .set({
+                status: subscription.status,
+                current_period_end: new Date(
+                  subscription.current_period_end * 1000,
+                ).toISOString(),
+              })
+              .where(eq(subscriptions.id, subscription.id));
             break;
           default:
             throw new Error("Unhandled relevant event!");

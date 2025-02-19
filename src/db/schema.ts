@@ -342,7 +342,7 @@ export type Price = typeof prices.$inferSelect;
 export type NewPrice = typeof prices.$inferInsert;
 
 export const credits = pgTable("credits", {
-  id: integer("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   user_id: text("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),

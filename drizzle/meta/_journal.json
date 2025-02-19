@@ -57,6 +57,13 @@
       "when": 1739896356941,
       "tag": "0007_fresh_supreme_intelligence",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1739942549306,
+      "tag": "0008_slimy_purifiers",
+      "breakpoints": true
     }
   ]
 }

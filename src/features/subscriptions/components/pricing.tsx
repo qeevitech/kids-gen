@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import type { Product, Price, Subscription } from "@/db/schema";
 import { SubscriptionWithProduct } from "../types";
 import { useCheckout } from "../api/use-checkout";
+import { useBilling } from "@/features/subscriptions/api/use-billing";
 
 interface ProductWithPrices extends Product {
   prices: Price[];
@@ -118,6 +119,7 @@ export function Pricing({
   const router = useRouter();
   const currentPath = usePathname();
   const checkout = useCheckout();
+  const billing = useBilling();
 
   const handleStripeCheckout = async (price: Price) => {
     checkout.mutate(price.id);
@@ -125,20 +127,7 @@ export function Pricing({
 
   const handleStripePortalRequest = async () => {
     toast.info("Redirecting to billing portal...");
-    try {
-      const response = await fetch("/api/subscriptions/billing", {
-        method: "POST",
-      });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error);
-      }
-
-      window.location.href = data.url;
-    } catch (error) {
-      toast.error("Failed to open billing portal");
-    }
+    billing.mutate();
   };
 
   return (

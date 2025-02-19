@@ -42,3 +42,5 @@ npx ngrok http http://localhost:3000
 ## Test modals
 
 https://www.youtube.com/watch?v=7AQNeii5K7E&t=6135s
+
+https://youtu.be/7AQNeii5K7E?t=37991

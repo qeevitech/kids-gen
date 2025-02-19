@@ -1,7 +1,7 @@
 import { protectServer } from "@/features/auth/utils";
-import { Banner } from "./_components/banner";
-import { TemplatesSection } from "./_components/templates-section";
-import { DesignSection } from "./_components/design-section";
+import { Banner } from "../_components/banner";
+import { TemplatesSection } from "../_components/templates-section";
+import { DesignSection } from "../_components/design-section";
 export default async function Home() {
   await protectServer();
 
