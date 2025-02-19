@@ -1,17 +1,14 @@
-interface LandingLayoutProps {
-  children: React.ReactNode;
-}
+import { Header } from "@/components/layout/header";
 
-const LandingLayout = ({ children }: LandingLayoutProps) => {
+export default function LandingLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="h-full bg-muted">
-      <div className="flex h-full flex-col lg:pl-[300px]">
-        <main className="flex-1 overflow-auto bg-white p-8 lg:rounded-tl-2xl">
-          {children}
-        </main>
-      </div>
+    <div className="min-h-screen">
+      <Header />
+      <main className="pt-16">{children}</main>
     </div>
   );
-};
-
-export default LandingLayout;
+}
