@@ -9,6 +9,8 @@ import {
   Sparkles,
   Type,
 } from "lucide-react";
+import { RiAiGenerate2 } from "react-icons/ri";
+import { FaPhotoFilm } from "react-icons/fa6";
 
 import { ActiveTool } from "@/features/designs/types";
 import { SidebarItem } from "@/features/designs/components/sidebar-item";
@@ -29,14 +31,15 @@ export const Sidebar = ({ activeTool, onChangeActiveTool }: SidebarProps) => {
           onClick={() => onChangeActiveTool("templates")}
         />
         <SidebarItem
-          icon={LayoutTemplate}
+          icon={FaPhotoFilm}
           label="Train"
           isActive={activeTool === "train"}
           onClick={() => onChangeActiveTool("train")}
         />
         <SidebarItem
-          icon={LayoutTemplate}
+          icon={RiAiGenerate2}
           label="Generate Story"
+          iconClassName="size-6"
           isActive={activeTool === "generate-story"}
           onClick={() => onChangeActiveTool("generate-story")}
         />

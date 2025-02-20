@@ -114,7 +114,7 @@ function ResourcesMegaMenu() {
                       <li key={item.name}>
                         <Link
                           href={item.href}
-                          className="hover:text-brand-primary group flex items-center gap-x-3 text-sm font-medium text-gray-900"
+                          className="group flex items-center gap-x-3 text-sm font-medium text-gray-900 hover:text-brand-primary"
                         >
                           <item.icon className="h-5 w-5 flex-none" />
                           {item.name}
@@ -167,7 +167,7 @@ export function Header() {
     if (item === resourcesMenu) {
       return (
         <div key={item.name} className="group relative">
-          <button className="hover:text-brand-primary flex items-center gap-x-1 text-sm font-medium leading-6 text-gray-900">
+          <button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-gray-900 hover:text-brand-primary">
             {item.name}
             <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
           </button>
@@ -181,11 +181,11 @@ export function Header() {
     if ("dropdown" in item && item.dropdown) {
       return (
         <div key={item.name} className="group relative">
-          <button className="hover:text-brand-primary flex items-center gap-x-1 text-sm font-medium leading-6 text-gray-900">
+          <button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-gray-900 hover:text-brand-primary">
             {item.name}
             <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
           </button>
-          <div className="invisible absolute left-0 top-full pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+          <div className="invisible absolute left-0 top-full pt-8 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
             <div className="w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
               {item.dropdown.map((subItem) => (
                 <Link
@@ -206,7 +206,7 @@ export function Header() {
       <Link
         key={item.name}
         href={item.href}
-        className="hover:text-brand-primary text-sm font-medium leading-6 text-gray-900"
+        className="text-sm font-medium leading-6 text-gray-900 hover:text-brand-primary"
       >
         {item.name}
       </Link>

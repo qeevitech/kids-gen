@@ -65,7 +65,7 @@ export const GenerateStory = ({
   const { data } = useGetTrainedModels();
 
   const trainedModels = data?.pages.flatMap((page) => page.models) ?? [];
-  const hasTrainedModels = trainedModels.length > 0;
+  // const hasTrainedModels = trainedModels.length > 0;
 
   return (
     <aside
