@@ -454,7 +454,7 @@ const Editor = ({ initialData }: EditorProps) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black bg-white"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleMovePageUp(index);
