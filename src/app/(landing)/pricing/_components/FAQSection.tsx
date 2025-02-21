@@ -9,7 +9,7 @@ import {
 
 const faqs = [
   {
-    question: "Can I use Kitti for free?",
+    question: "Can I use KidBooks for free?",
     answer:
       "Yes! You can start with our free plan which includes 2 AI story generations per month, unlimited basic designs, and access to essential templates and tools. Perfect for trying out the platform.",
   },
@@ -24,17 +24,17 @@ const faqs = [
       "Absolutely! You can cancel your subscription at any time from your account dashboard. You'll continue to have access to your plan's features until the end of your current billing period.",
   },
   {
-    question: "Does Kitti offer discounts for students and teachers?",
+    question: "Does KidBooks offer discounts for students and teachers?",
     answer:
       "Yes! We offer special educational pricing for verified students and teachers. Contact our support team with your academic credentials to learn more about our education discounts.",
   },
   {
-    question: "How can I learn more about how to use Kitti?",
+    question: "How can I learn more about how to use KidBooks?",
     answer:
       "We offer comprehensive tutorials, documentation, and video guides in our Help Center. Plus, our community forum is a great place to learn from other creators and share tips.",
   },
   {
-    question: "Can I use Kitti for commercial projects?",
+    question: "Can I use KidBooks for commercial projects?",
     answer:
       "Yes! Our Pro and Expert plans include commercial usage rights. You can use the stories and illustrations you create for commercial purposes, including publishing and selling.",
   },

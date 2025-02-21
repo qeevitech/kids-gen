@@ -70,12 +70,20 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
         },
         "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
         },
       },
       animation: {
@@ -83,7 +91,6 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       fontFamily: {
-        // Playful and Child-friendly
         "comic-neue": ["Comic Neue", "cursive"],
         bubblegum: ["Bubblegum Sans", "cursive"],
         schoolbell: ["Schoolbell", "cursive"],
@@ -104,32 +111,22 @@ export default {
         mali: ["Mali", "cursive"],
         chilanka: ["Chilanka", "cursive"],
         gaegu: ["Gaegu", "cursive"],
-
-        // Clean and Modern
         poppins: ["Poppins", "sans-serif"],
         quicksand: ["Quicksand", "sans-serif"],
         nunito: ["Nunito", "sans-serif"],
         montserrat: ["Montserrat", "sans-serif"],
-
-        // Decorative
         pacifico: ["Pacifico", "cursive"],
         "dancing-script": ["Dancing Script", "cursive"],
         "great-vibes": ["Great Vibes", "cursive"],
         satisfy: ["Satisfy", "cursive"],
-
-        // Readable Serif
         merriweather: ["Merriweather", "serif"],
         "playfair-display": ["Playfair Display", "serif"],
         lora: ["Lora", "serif"],
         "crimson-text": ["Crimson Text", "serif"],
-
-        // Handwriting
         caveat: ["Caveat", "cursive"],
         kalam: ["Kalam", "cursive"],
         "shadows-light": ["Shadows Into Light", "cursive"],
         "permanent-marker": ["Permanent Marker", "cursive"],
-
-        // Cute
         baloo: ["Baloo 2", "cursive"],
         comfortaa: ["Comfortaa", "cursive"],
         "varela-round": ["Varela Round", "sans-serif"],
@@ -137,8 +134,6 @@ export default {
         itim: ["Itim", "cursive"],
         dongle: ["Dongle", "sans-serif"],
         "gamja-flower": ["Gamja Flower", "cursive"],
-
-        // Fancy/Elegant
         cinzel: ["Cinzel", "serif"],
         cormorant: ["Cormorant Garamond", "serif"],
         "pinyon-script": ["Pinyon Script", "cursive"],
@@ -146,8 +141,6 @@ export default {
         tangerine: ["Tangerine", "cursive"],
         "rouge-script": ["Rouge Script", "cursive"],
         allura: ["Allura", "cursive"],
-
-        // Vintage/Retro
         "abril-fatface": ["Abril Fatface", "cursive"],
         lobster: ["Lobster", "cursive"],
         sacramento: ["Sacramento", "cursive"],
@@ -155,8 +148,6 @@ export default {
         "fugaz-one": ["Fugaz One", "cursive"],
         monoton: ["Monoton", "cursive"],
         righteous: ["Righteous", "cursive"],
-
-        // Futuristic/Modern
         orbitron: ["Orbitron", "sans-serif"],
         audiowide: ["Audiowide", "cursive"],
         exo: ["Exo 2", "sans-serif"],
