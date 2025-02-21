@@ -153,6 +153,7 @@ export function GrownUpStoryForm({ designId }: { designId: string }) {
   const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
+    setIsGenerating(true);
     let modelName = "";
     if (data.modelId) {
       const model = trainedModels.find((model) => model.id === data.modelId);

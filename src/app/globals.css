@@ -128,3 +128,26 @@ body {
   border-radius: 0.5rem !important;
   overflow: hidden !important;
 }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Scrollbar Track */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Light gray */
+  border-radius: 4px;
+}
+
+/* Scrollbar Handle */
+::-webkit-scrollbar-thumb {
+  background: #a0a0a0; /* Darker gray */
+  border-radius: 4px;
+}
+
+/* Scrollbar Handle on Hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #808080; /* Even darker gray */
+}

@@ -80,7 +80,7 @@ function getKidsPrompt(data: any) {
   
   Important Note: While the story text should be in ${getLanguageName(
     data.language,
-  )}, please provide all image_prompt fields in English only.
+  )}, please provide all image_prompt fields in English only and use the age group to determine the style of the illustrations.
   
   Format the response as a JSON with this exact structure:
   {
@@ -157,6 +157,7 @@ async function generateImage(
   modelName: string,
   userId: string,
   gender: string,
+  seed: number,
 ) {
   const fluxModel = modelName.startsWith(
     `${process.env.NEXT_PUBLIC_REPLICATE_USER_NAME}/`,
@@ -178,6 +179,7 @@ async function generateImage(
         num_inference_steps: 28,
         prompt_strength: 0.8,
         extra_lora_scale: 0,
+        seed,
       }
     : {
         prompt: prompt,
@@ -190,6 +192,7 @@ async function generateImage(
         output_quality: 80,
         prompt_strength: 0.8,
         num_inference_steps: 4,
+        seed,
       };
 
   try {
@@ -261,6 +264,7 @@ const app = new Hono().post(
       const response = JSON.parse(
         result.response.text().replace(/```json\n|\n```/g, ""),
       );
+      const seed = Math.floor(Math.random() * 1000000);
 
       // Generate cover image
       const coverImageUrl = await generateImage(
@@ -268,6 +272,7 @@ const app = new Hono().post(
         data.modelName,
         auth.token.id,
         data.gender,
+        seed,
       );
 
       // Generate chapter images in parallel
@@ -277,6 +282,7 @@ const app = new Hono().post(
           data.modelName,
           auth.token?.id!,
           data.gender,
+          seed,
         ),
       );
       const chapterImageUrls = await Promise.all(chapterImagesPromises);

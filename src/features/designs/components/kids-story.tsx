@@ -98,7 +98,6 @@ type FormData = z.infer<typeof formSchema>;
 export function KidsStoryForm({ designId }: { designId: string }) {
   const setIsGenerating = useEditorsStore((state) => state.setIsGenerating);
   const { mutate: generateStory, isPending: isLoading } = useGenerateStory();
-  const router = useRouter();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -131,14 +130,18 @@ export function KidsStoryForm({ designId }: { designId: string }) {
 
   const onSubmit = async (data: FormData) => {
     setIsGenerating(true);
+    let modelName = "";
+    if (data.modelId) {
+      const model = trainedModels.find((model) => model.id === data.modelId);
+      modelName = `${process.env.NEXT_PUBLIC_REPLICATE_USER_NAME}/${model?.modelId}:${model?.version}`;
+    }
     generateStory({
       ...data,
       designId,
       gender:
         trainedModels.find((model) => model.id === data.modelId)?.gender ||
         "man",
-      modelName: trainedModels.find((model) => model.id === data.modelId)
-        ?.modelName,
+      modelName,
       pageCount: data.length === "Short" ? 3 : data.length === "Medium" ? 5 : 7,
     });
   };

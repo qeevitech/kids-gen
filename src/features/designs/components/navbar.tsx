@@ -179,7 +179,7 @@ export const Navbar = ({ id, activeTool, onChangeActiveTool }: NavbarProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-60">
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 className="flex items-center gap-x-2"
                 onClick={() => editor?.saveJson()}
               >
@@ -190,7 +190,7 @@ export const Navbar = ({ id, activeTool, onChangeActiveTool }: NavbarProps) => {
                     Save for later editing
                   </p>
                 </div>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem
                 className="flex items-center gap-x-2"
                 onClick={() => handleExportAllPages("png")}

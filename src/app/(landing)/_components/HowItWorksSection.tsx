@@ -8,9 +8,9 @@ const steps = [
   {
     title: "Choose Your Story Type",
     description:
-      "Select from children's tales, novels, educational content, or use AI to generate a custom story concept.",
+      "Select from the free and pro templates or start with a blank canvas, or use AI to generate a custom story concept.",
     icon: Sparkles,
-    image: "/images/how-it-works/choose-story.jpeg",
+    image: "/images/how-it-works/ai-generation.png",
     color: "text-purple-600",
     bgColor: "bg-purple-100",
   },
@@ -19,7 +19,7 @@ const steps = [
     description:
       "Use our intuitive editor to customize characters, plot, and settings. Add AI-generated illustrations that match your vision.",
     icon: Palette,
-    image: "/images/how-it-works/customize.jpeg",
+    image: "/images/how-it-works/customize.png",
     color: "text-blue-600",
     bgColor: "bg-blue-100",
   },
@@ -28,16 +28,16 @@ const steps = [
     description:
       "Preview your story, make adjustments, and let our AI enhance the narrative and visuals for maximum impact.",
     icon: BookOpen,
-    image: "/images/how-it-works/review.jpeg",
+    image: "/images/how-it-works/review.png",
     color: "text-green-600",
     bgColor: "bg-green-100",
   },
   {
-    title: "Share & Publish",
+    title: "Download",
     description:
       "Export your story in multiple formats, share with your audience, or publish directly to your preferred platform.",
     icon: Share2,
-    image: "/images/how-it-works/share.jpeg",
+    image: "/images/how-it-works/share.png",
     color: "text-pink-600",
     bgColor: "bg-pink-100",
   },
@@ -84,7 +84,7 @@ export function HowItWorksSection() {
                   </motion.div>
 
                   {/* Icon */}
-                  <motion.div
+                  {/* <motion.div
                     initial={{ scale: 0.5, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 1 }}
                     viewport={{ once: true }}
@@ -92,7 +92,7 @@ export function HowItWorksSection() {
                     className={`mb-6 flex h-16 w-16 items-center justify-center rounded-full ${step.bgColor}`}
                   >
                     <step.icon className={`h-8 w-8 ${step.color}`} />
-                  </motion.div>
+                  </motion.div> */}
 
                   {/* Image */}
                   <motion.div
@@ -127,9 +127,9 @@ export function HowItWorksSection() {
                   </motion.div>
 
                   {/* Connector Line */}
-                  {index < steps.length - 1 && (
+                  {/* {index < steps.length - 1 && (
                     <div className="absolute right-0 top-32 hidden h-[2px] w-full translate-x-1/2 bg-gray-200 lg:block" />
-                  )}
+                  )} */}
                 </div>
               </motion.div>
             ))}

@@ -55,9 +55,9 @@ export function HeroSection() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              {/* <Button size="lg" variant="outline" asChild>
                 <Link href="/#examples">See Examples</Link>
-              </Button>
+              </Button> */}
             </div>
             <div className="mt-8 flex items-center justify-center gap-x-8">
               <div className="flex items-center gap-x-2">

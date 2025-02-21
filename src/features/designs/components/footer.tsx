@@ -28,7 +28,7 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-[49] flex h-[52px] w-full shrink-0 flex-row-reverse items-center gap-x-1 overflow-x-auto border-t bg-white p-2 px-4">
+    <footer className="fixed bottom-0 right-0 flex h-[52px] shrink-0 flex-row-reverse items-center gap-x-1 overflow-x-auto bg-transparent p-2 px-4">
       <Hint label="Reset" side="top" sideOffset={10}>
         <Button
           onClick={handleAutoZoom}

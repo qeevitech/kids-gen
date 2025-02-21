@@ -445,16 +445,16 @@ const Editor = ({ initialData }: EditorProps) => {
                       currentPage === index ? "rounded-md" : ""
                     }`}
                   >
-                    <div className="absolute left-0 top-4 z-10 flex w-full items-center justify-center px-4">
+                    <div className="absolute left-0 z-10 flex w-full items-center justify-center gap-2 px-4">
                       <span className="text-sm text-muted-foreground">
                         Page {index + 1}
                       </span>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <Hint label="Move up" side="top" sideOffset={10}>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleMovePageUp(index);
@@ -468,7 +468,7 @@ const Editor = ({ initialData }: EditorProps) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleMovePageDown(index);
@@ -482,7 +482,7 @@ const Editor = ({ initialData }: EditorProps) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDuplicatePage(index);
@@ -495,7 +495,7 @@ const Editor = ({ initialData }: EditorProps) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeletePage(index);
@@ -509,7 +509,7 @@ const Editor = ({ initialData }: EditorProps) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleAddPage(index);
@@ -536,7 +536,21 @@ const Editor = ({ initialData }: EditorProps) => {
                   </div>
                 ))}
 
-                <Button
+                <Hint label="Add Page" side="top" sideOffset={10}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full border-2 border-dashed border-black"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddPage();
+                    }}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </Hint>
+
+                {/* <Button
                   variant="outline"
                   size="lg"
                   className="mb-10 mt-4 flex items-center gap-2"
@@ -544,7 +558,7 @@ const Editor = ({ initialData }: EditorProps) => {
                 >
                   <Plus className="h-4 w-4" />
                   Add Page
-                </Button>
+                </Button> */}
               </div>
             </div>
             <Footer />
