@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import Image from "next/image";
 
 import { UserButton } from "@/features/auth/components/user-button";
 
@@ -29,14 +30,48 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useEditorsStore } from "../stores/use-editors-store";
+import { Input } from "@/components/ui/input";
+import { useEffect, useRef, useState } from "react";
+import { useUpdateDesign } from "../api/use-update-design";
 
 interface NavbarProps {
   id: string;
+  initialName: string;
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
 }
 
-export const Navbar = ({ id, activeTool, onChangeActiveTool }: NavbarProps) => {
+const exportOptions = [
+  {
+    id: "png",
+    title: "PNG Format",
+    description: "Best for sharing online",
+    icon: "/icons/png-icon.svg",
+  },
+  {
+    id: "jpg",
+    title: "JPEG Format",
+    description: "Best for printing",
+    icon: "/icons/jpg-icon.svg",
+  },
+  {
+    id: "svg",
+    title: "SVG Format",
+    description: "Best for editing",
+    icon: "/icons/svg-icon.svg",
+  },
+];
+
+export const Navbar = ({
+  id,
+  initialName,
+  activeTool,
+  onChangeActiveTool,
+}: NavbarProps) => {
+  const { mutate } = useUpdateDesign(id);
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(initialName);
+  const inputRef = useRef<HTMLInputElement>(null);
   const editor = useEditorsStore((state) => state.getCurrentEditor());
   const data = useMutationState({
     filters: {
@@ -50,6 +85,19 @@ export const Navbar = ({ id, activeTool, onChangeActiveTool }: NavbarProps) => {
 
   const isError = currentStatus === "error";
   const isPending = currentStatus === "pending";
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    if (name !== initialName) {
+      mutate({ name });
+    }
+  };
 
   // const { openFilePicker } = useFilePicker({
   //   accept: ".json",
@@ -170,63 +218,83 @@ export const Navbar = ({ id, activeTool, onChangeActiveTool }: NavbarProps) => {
             <div className="text-xs text-muted-foreground">Saved</div>
           </div>
         )}
+        {/* Design Name */}
+        <div className="flex-1 text-center">
+          {isEditing ? (
+            <Input
+              ref={inputRef}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onBlur={handleBlur}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleBlur();
+                }
+              }}
+              className="mx-auto max-w-[200px] text-center"
+            />
+          ) : (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="mx-auto inline-flex items-center gap-x-2 text-sm hover:opacity-75"
+            >
+              <span className="border-b border-dashed border-muted-foreground">
+                {name}
+              </span>
+              <MousePointerClick className="h-3 w-3 text-muted-foreground" />
+            </button>
+          )}
+        </div>
         <div className="ml-auto flex items-center gap-x-4">
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="ghost">
-                Export
-                <Download className="ml-4 size-4" />
+              <Button
+                size="sm"
+                className="flex items-center gap-2 px-4 py-2 transition-all hover:bg-black/70"
+              >
+                <Download className="h-4 w-4" />
+                <span>Export Story</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-60">
-              {/* <DropdownMenuItem
-                className="flex items-center gap-x-2"
-                onClick={() => editor?.saveJson()}
-              >
-                <CiFileOn className="size-8" />
-                <div>
-                  <p>JSON</p>
-                  <p className="text-xs text-muted-foreground">
-                    Save for later editing
-                  </p>
-                </div>
-              </DropdownMenuItem> */}
-              <DropdownMenuItem
-                className="flex items-center gap-x-2"
-                onClick={() => handleExportAllPages("png")}
-              >
-                <CiFileOn className="size-8" />
-                <div>
-                  <p>PNG</p>
-                  <p className="text-xs text-muted-foreground">
-                    Export all pages as PNG (ZIP)
-                  </p>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="flex items-center gap-x-2"
-                onClick={() => editor?.saveJpg()}
-              >
-                <CiFileOn className="size-8" />
-                <div>
-                  <p>JPG</p>
-                  <p className="text-xs text-muted-foreground">
-                    Best for printing
-                  </p>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="flex items-center gap-x-2"
-                onClick={() => editor?.saveSvg()}
-              >
-                <CiFileOn className="size-8" />
-                <div>
-                  <p>SVG</p>
-                  <p className="text-xs text-muted-foreground">
-                    Best for editing in vector software
-                  </p>
-                </div>
-              </DropdownMenuItem>
+            <DropdownMenuContent align="end" className="w-[300px] p-2">
+              <div className="p-2">
+                <h4 className="mb-2 text-sm font-medium">Export Options</h4>
+                <p className="text-xs text-muted-foreground">
+                  Choose your preferred format to download your story
+                </p>
+              </div>
+              <div className="my-2 h-px bg-muted" />
+              {exportOptions.map((option) => (
+                <DropdownMenuItem
+                  key={option.id}
+                  onClick={() =>
+                    handleExportAllPages(option.id as "png" | "jpg" | "svg")
+                  }
+                  className="group relative flex cursor-pointer select-none items-center gap-3 rounded-md p-3 text-sm outline-none transition-colors hover:bg-accent focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border bg-background shadow-sm">
+                    <Image
+                      src={option.icon}
+                      alt={option.title}
+                      width={24}
+                      height={24}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium">{option.title}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {option.description}
+                    </span>
+                  </div>
+                  <Download className="ml-auto h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                </DropdownMenuItem>
+              ))}
+              <div className="my-2 h-px bg-muted" />
+              <div className="p-2">
+                <p className="text-xs text-muted-foreground">
+                  All pages will be exported in a ZIP file
+                </p>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
           <UserButton />

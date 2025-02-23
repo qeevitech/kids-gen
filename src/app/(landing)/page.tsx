@@ -4,7 +4,6 @@ import { UserBenefitsSection } from "./_components/UserBenefitsSection";
 import { HowItWorksSection } from "./_components/HowItWorksSection";
 import { TestimonialsSection } from "./_components/TestimonialsSection";
 import { CTASection } from "./_components/CTASection";
-import { FooterSection } from "./_components/FooterSection";
 
 export default function LandingPage() {
   return (
@@ -15,7 +14,6 @@ export default function LandingPage() {
       <HowItWorksSection />
       <TestimonialsSection />
       <CTASection />
-      <FooterSection />
     </main>
   );
 }

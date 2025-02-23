@@ -349,6 +349,7 @@ const Editor = ({ initialData }: EditorProps) => {
         )}
       >
         <Navbar
+          initialName={initialData.name}
           id={initialData.id}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}

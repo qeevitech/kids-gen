@@ -47,7 +47,14 @@ export const UserButton = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-60">
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="h-10" onClick={() => signOut()}>
+        <DropdownMenuItem
+          className="h-10"
+          onClick={() =>
+            signOut({
+              callbackUrl: "/",
+            })
+          }
+        >
           <LogOut className="mr-2 size-4" />
           Log out
         </DropdownMenuItem>

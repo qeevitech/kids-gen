@@ -77,7 +77,10 @@ const navigation = {
 
 export function FooterSection() {
   return (
-    <footer className="bg-white" aria-labelledby="footer-heading">
+    <footer
+      className="border-t-2 border-gray-200 bg-white"
+      aria-labelledby="footer-heading"
+    >
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>

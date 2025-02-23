@@ -38,7 +38,7 @@ export const ShapeSidebar = ({
   const basicShapes = [
     {
       icon: FaSquare,
-      onClick: () => editor?.addSoftRectangle(),
+      onClick: () => editor?.addRectangle(),
       label: "Square",
     },
     { icon: FaCircle, onClick: () => editor?.addCircle(), label: "Circle" },
@@ -50,7 +50,7 @@ export const ShapeSidebar = ({
     { icon: FaDiamond, onClick: () => editor?.addDiamond(), label: "Diamond" },
     {
       icon: FaRectangleAd,
-      onClick: () => editor?.addRectangle(),
+      onClick: () => editor?.addSoftRectangle(),
       label: "Rectangle",
     },
   ];

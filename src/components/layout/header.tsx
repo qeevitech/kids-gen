@@ -333,10 +333,10 @@ export function Header() {
 
           <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4">
             <Button variant="ghost" asChild>
-              <Link href="/login">Sign in</Link>
+              <Link href="/sign-in">Sign in</Link>
             </Button>
             <Button asChild>
-              <Link href="/register">Get Started</Link>
+              <Link href="/sign-up">Get Started</Link>
             </Button>
           </div>
         </nav>

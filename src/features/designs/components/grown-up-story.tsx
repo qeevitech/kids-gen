@@ -35,6 +35,7 @@ import { useRouter } from "next/navigation";
 import { useGenerateStory } from "../api/use-generate-story";
 import { TemplateSelector } from "./template-selector";
 import { Template } from "@/types";
+import { useEditorsStore } from "../stores/use-editors-store";
 
 const formSchema = z.object({
   storySubject: z.string().min(1, "storySubject is required"),
@@ -118,8 +119,8 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export function GrownUpStoryForm({ designId }: { designId: string }) {
+  const setIsGenerating = useEditorsStore((state) => state.setIsGenerating);
   const { mutate: generateStory, isPending: isLoading } = useGenerateStory();
-  const [isGenerating, setIsGenerating] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -143,14 +144,12 @@ export function GrownUpStoryForm({ designId }: { designId: string }) {
     data: templatesData,
     isLoading: templatesLoading,
     isError: templatesError,
-  } = useGetTemplates({ page: "1", limit: "10", category: "grown-ups" });
+  } = useGetTemplates({ page: "1", limit: "4", category: "grown-ups" });
   const { data: modelsData } = useGetTrainedModels();
 
   const trainedModels = modelsData?.pages.flatMap((page) => page.models) ?? [];
   const hasTrainedModels = trainedModels.length > 0;
   const templates = (templatesData as Template[]) ?? [];
-
-  const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
     setIsGenerating(true);
