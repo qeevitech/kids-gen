@@ -55,11 +55,11 @@ export const ShapeSidebar = ({
     },
   ];
 
-  const masks = [
-    { src: "/shapes/masks/landscape.png", label: "Landscape" },
-    { src: "/shapes/masks/mountain.png", label: "Mountain" },
-    { src: "/shapes/masks/wave.png", label: "Wave" },
-  ];
+  // const masks = [
+  //   { src: "/shapes/masks/landscape.png", label: "Landscape" },
+  //   { src: "/shapes/masks/mountain.png", label: "Mountain" },
+  //   { src: "/shapes/masks/wave.png", label: "Wave" },
+  // ];
 
   const speechBubbles = [
     { src: "/shapes/speech-bubbles/thought-cloud.png", label: "Thought Cloud" },
@@ -80,38 +80,38 @@ export const ShapeSidebar = ({
     { src: "/shapes/speech-bubbles/cloud-dialog.png", label: "Cloud Dialog" },
   ];
 
-  const moreTextBoxes = [
-    {
-      src: "/shapes/text-boxes/scalloped-frame.png",
-      label: "Scalloped Frame",
-      // Prompt: "Decorative scalloped frame text box with black border, vintage style, UI element on white background"
-    },
-    {
-      src: "/shapes/text-boxes/dotted-rect.png",
-      label: "Dotted Rectangle",
-      // Prompt: "Rectangle text box with dotted black border, minimal UI element on white background"
-    },
-    {
-      src: "/shapes/text-boxes/notebook-paper.png",
-      label: "Notebook Paper",
-      // Prompt: "Notebook paper style text box with blue lines and red margin, nostalgic school paper look, UI element"
-    },
-    {
-      src: "/shapes/text-boxes/wavy-banner.png",
-      label: "Wavy Banner",
-      // Prompt: "Wavy banner text box with gentle curves, playful design, UI element on white background"
-    },
-    {
-      src: "/shapes/text-boxes/torn-paper.png",
-      label: "Torn Paper",
-      // Prompt: "Torn paper effect text box with rough edges, white background with subtle shadow, UI element"
-    },
-    {
-      src: "/shapes/text-boxes/gradient-card.png",
-      label: "Gradient Card",
-      // Prompt: "Soft gradient background text card from purple to blue, rounded corners, modern UI element"
-    },
-  ];
+  // const moreTextBoxes = [
+  //   {
+  //     src: "/shapes/text-boxes/scalloped-frame.png",
+  //     label: "Scalloped Frame",
+  //     // Prompt: "Decorative scalloped frame text box with black border, vintage style, UI element on white background"
+  //   },
+  //   {
+  //     src: "/shapes/text-boxes/dotted-rect.png",
+  //     label: "Dotted Rectangle",
+  //     // Prompt: "Rectangle text box with dotted black border, minimal UI element on white background"
+  //   },
+  //   {
+  //     src: "/shapes/text-boxes/notebook-paper.png",
+  //     label: "Notebook Paper",
+  //     // Prompt: "Notebook paper style text box with blue lines and red margin, nostalgic school paper look, UI element"
+  //   },
+  //   {
+  //     src: "/shapes/text-boxes/wavy-banner.png",
+  //     label: "Wavy Banner",
+  //     // Prompt: "Wavy banner text box with gentle curves, playful design, UI element on white background"
+  //   },
+  //   {
+  //     src: "/shapes/text-boxes/torn-paper.png",
+  //     label: "Torn Paper",
+  //     // Prompt: "Torn paper effect text box with rough edges, white background with subtle shadow, UI element"
+  //   },
+  //   {
+  //     src: "/shapes/text-boxes/gradient-card.png",
+  //     label: "Gradient Card",
+  //     // Prompt: "Soft gradient background text card from purple to blue, rounded corners, modern UI element"
+  //   },
+  // ];
 
   const textBoxes = [
     {

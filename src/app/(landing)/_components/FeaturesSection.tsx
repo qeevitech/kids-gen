@@ -5,11 +5,9 @@ import {
   Wand2,
   BookOpen,
   Share2,
-  Lock,
   Layers,
   Zap,
   Brain,
-  Upload,
 } from "lucide-react";
 
 const features = [

@@ -17,7 +17,6 @@ import {
   upsertProductRecord,
 } from "@/lib/admin";
 
-import type { Product, Price } from "@/db/schema";
 import type { ProductWithPrices } from "@/features/subscriptions/api/use-get-products";
 
 const relevantEvents = new Set([
@@ -198,6 +197,7 @@ const app = new Hono()
         process.env.STRIPE_WEBHOOK_SECRET!,
       );
     } catch (error) {
+      console.error(error);
       return c.json({ error: "Invalid signature" }, 400);
     }
 
@@ -242,7 +242,6 @@ const app = new Hono()
                 subscriptionId as string,
                 checkoutSession.customer as string,
                 checkoutSession.metadata as Record<string, string>,
-                true,
               );
 
               // update credits
@@ -291,10 +290,6 @@ const app = new Hono()
     }
 
     if (event.type === "checkout.session.completed") {
-      const subscription = await stripe.subscriptions.retrieve(
-        session.subscription as string,
-      );
-
       if (!session?.metadata?.userId) {
         return c.json({ error: "Invalid session" }, 400);
       }
@@ -312,10 +307,6 @@ const app = new Hono()
     }
 
     if (event.type === "invoice.payment_succeeded") {
-      const subscription = await stripe.subscriptions.retrieve(
-        session.subscription as string,
-      );
-
       if (!session?.metadata?.userId) {
         return c.json({ error: "Invalid session" }, 400);
       }

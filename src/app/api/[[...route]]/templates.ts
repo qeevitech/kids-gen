@@ -6,7 +6,6 @@ import { zValidator } from "@hono/zod-validator";
 
 import { db } from "@/db/drizzle";
 import { templates } from "@/db/schema";
-import { storyTemplates } from "@/db/schema";
 
 const app = new Hono().get(
   "/",

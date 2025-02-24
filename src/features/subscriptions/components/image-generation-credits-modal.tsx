@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { CheckCircle2 } from "lucide-react";
 
-import { useCheckout } from "@/features/subscriptions/api/use-checkout";
 import { useImageGenerationModal } from "@/features/subscriptions/store/use-image-generation-modal";
 
 import {
@@ -19,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export const ImageGenerationModal = () => {
-  const mutation = useCheckout();
   const { isOpen, onClose } = useImageGenerationModal();
 
   return (

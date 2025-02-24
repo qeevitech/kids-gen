@@ -22,16 +22,9 @@ import {
 } from "@/components/ui/form";
 import { useGetTrainedModels } from "../api/use-get-models";
 import { useGetTemplates } from "../api/use-get-templates";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
 import { supportedLanguages } from "../languages";
-import { toast } from "sonner";
-import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import StorySubjectInput from "./StorySubjectInput";
-import { client } from "@/lib/hono";
-import { useRouter } from "next/navigation";
 import { useGenerateStory } from "../api/use-generate-story";
 import { TemplateSelector } from "./template-selector";
 import { Template } from "@/types";
@@ -145,9 +138,9 @@ export function GrownUpStoryForm({ designId }: { designId: string }) {
     isLoading: templatesLoading,
     isError: templatesError,
   } = useGetTemplates({ page: "1", limit: "4", category: "grown-ups" });
-  const { data: modelsData } = useGetTrainedModels();
+  const { data: modelsData } = useGetTrainedModels(50);
 
-  const trainedModels = modelsData?.pages.flatMap((page) => page.models) ?? [];
+  const trainedModels = modelsData?.pages.flatMap((page) => page.data) ?? [];
   const hasTrainedModels = trainedModels.length > 0;
   const templates = (templatesData as Template[]) ?? [];
 
@@ -163,8 +156,11 @@ export function GrownUpStoryForm({ designId }: { designId: string }) {
       designId,
       modelName,
       gender:
-        trainedModels.find((model) => model.id === data.modelId)?.gender ||
-        "man",
+        (trainedModels.find((model) => model.id === data.modelId)?.gender as
+          | "man"
+          | "women"
+          | "boy"
+          | "girl") || "man",
     });
   };
 

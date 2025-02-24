@@ -280,7 +280,7 @@ const app = new Hono().post(
         generateImage(
           chapter.image_prompt,
           data.modelName,
-          auth.token?.id!,
+          auth.token?.id || "",
           data.gender,
           seed,
         ),

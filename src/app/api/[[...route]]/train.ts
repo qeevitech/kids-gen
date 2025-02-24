@@ -8,7 +8,7 @@ import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { db } from "@/db/drizzle";
 import { models } from "@/db/schema";
-import { eq, lt, and } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 const TrainModelSchema = z.object({
   fileKey: z.string().min(1),
@@ -30,45 +30,39 @@ async function getStorageUrl(fileKey: string) {
 }
 
 const app = new Hono()
-  .get("/", verifyAuth(), async (c) => {
-    const auth = c.get("authUser");
-    const limit = Number(c.req.query("limit") ?? "10");
-    const cursor = c.req.query("cursor");
+  .get(
+    "/",
+    verifyAuth(),
+    zValidator(
+      "query",
+      z.object({
+        category: z.string().optional(),
+        page: z.coerce.number(),
+        limit: z.coerce.number(),
+      }),
+    ),
+    async (c) => {
+      const auth = c.get("authUser");
+      const { page, limit } = c.req.valid("query");
 
-    if (!auth.token?.id) {
-      return c.json({ error: "Unauthorized" }, 401);
-    }
+      if (!auth.token?.id) {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
 
-    try {
-      const items = await db
+      const data = await db
         .select()
         .from(models)
-        .where(
-          cursor && cursor.length > 0
-            ? and(
-                eq(models.userId, auth.token.id),
-                lt(models.createdAt, new Date(cursor)),
-              )
-            : eq(models.userId, auth.token.id),
-        )
-        .orderBy(models.createdAt)
-        .limit(limit + 1);
-
-      const hasMore = items.length > limit;
-      const nextCursor = hasMore
-        ? items[limit - 1].createdAt.toISOString()
-        : null;
-      const trainedModels = hasMore ? items.slice(0, -1) : items;
+        .where(eq(models.userId, auth.token.id))
+        .limit(limit)
+        .offset((page - 1) * limit)
+        .orderBy(desc(models.updatedAt));
 
       return c.json({
-        models: trainedModels,
-        nextCursor,
+        data,
+        nextPage: data.length === limit ? page + 1 : null,
       });
-    } catch (error) {
-      console.error("Error fetching models:", error);
-      return c.json({ error: "Failed to fetch models" }, 500);
-    }
-  })
+    },
+  )
   .post("/", verifyAuth(), zValidator("json", TrainModelSchema), async (c) => {
     const auth = c.get("authUser");
     const data = c.req.valid("json");
@@ -116,7 +110,7 @@ const app = new Hono()
       );
 
       // Save model details to database
-      const [model] = await db
+      await db
         .insert(models)
         .values({
           userId,

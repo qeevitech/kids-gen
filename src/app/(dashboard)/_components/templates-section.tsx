@@ -24,12 +24,10 @@ export const TemplatesSection = () => {
   });
 
   const onClick = (template: ResponseType["data"][0]) => {
-    // if (template.isPro && shouldBlock) {
-    //   triggerPaywall();
-    //   return;
-    // }
-    triggerPaywall();
-    return;
+    if (template.isPro && shouldBlock) {
+      triggerPaywall();
+      return;
+    }
 
     mutation.mutate(
       {

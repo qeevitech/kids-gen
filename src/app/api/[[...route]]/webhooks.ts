@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import crypto from "crypto";
-import { Resend } from "resend";
 import { replicate } from "@/lib/replicate";
 import { db } from "@/db/drizzle";
 import { models } from "@/db/schema";

@@ -74,7 +74,7 @@ export function UserBenefitsSection() {
         </div>
 
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-          {benefits.map((benefit, index) => (
+          {benefits.map((benefit) => (
             <div
               key={benefit.userType}
               className={`relative isolate my-24 flex flex-col gap-12 lg:flex-row ${

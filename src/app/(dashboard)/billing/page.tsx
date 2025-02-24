@@ -1,5 +1,4 @@
 import { PlanSummary } from "@/features/subscriptions/components/plan-summary";
-import { redirect } from "next/navigation";
 import React from "react";
 
 const BillingPage = async () => {

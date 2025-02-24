@@ -61,8 +61,7 @@ const Editor = ({ initialData }: EditorProps) => {
   // Get fresh editors state
   const editors = useEditorsStore((state) => state.editors);
   const { data: credits } = useGetCredits();
-  const { setImageGenerationCount, decrementImageGenerationCount } =
-    useCreditsStore();
+  const { setImageGenerationCount } = useCreditsStore();
 
   // Initialize store with data
   useEffect(() => {
@@ -469,7 +468,7 @@ const Editor = ({ initialData }: EditorProps) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black bg-white"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleMovePageDown(index);
@@ -483,7 +482,7 @@ const Editor = ({ initialData }: EditorProps) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black bg-white"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDuplicatePage(index);
@@ -496,7 +495,7 @@ const Editor = ({ initialData }: EditorProps) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black bg-white"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeletePage(index);
@@ -510,7 +509,7 @@ const Editor = ({ initialData }: EditorProps) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-full border-2 border-dashed border-black"
+                            className="h-8 w-8 rounded-full border-2 border-dashed border-black bg-white"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleAddPage(index);

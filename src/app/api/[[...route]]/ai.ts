@@ -30,6 +30,7 @@ const app = new Hono()
       try {
         await checkImageGenerationCredits(auth.token?.id);
       } catch (error) {
+        console.error(error);
         return c.json({ error: "Insufficient credits" }, 400);
       }
       const input = {
@@ -68,6 +69,7 @@ const app = new Hono()
       try {
         await checkImageGenerationCredits(auth.token?.id);
       } catch (error) {
+        console.error(error);
         return c.json({ error: "Insufficient credits" }, 400);
       }
 

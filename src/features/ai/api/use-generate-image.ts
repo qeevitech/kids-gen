@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
+import { InferRequestType } from "hono";
 
 import { client } from "@/lib/hono";
 
@@ -7,9 +7,6 @@ interface ImageResponse {
   url: string;
 }
 
-type ResponseType = InferResponseType<
-  (typeof client.api.ai)["generate-image"]["$post"]
->;
 type RequestType = InferRequestType<
   (typeof client.api.ai)["generate-image"]["$post"]
 >["json"];

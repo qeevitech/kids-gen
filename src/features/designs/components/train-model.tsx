@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActiveTool } from "@/features/designs/types";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useEditorsStore } from "../stores/use-editors-store";
 import { ToolSidebarClose } from "./tool-sidebar-close";
 import { ToolSidebarHeader } from "./tool-sidebar-header";
 import { TrainedModels } from "./trained-models";

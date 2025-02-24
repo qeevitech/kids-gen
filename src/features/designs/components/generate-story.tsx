@@ -1,27 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Loader2 } from "lucide-react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetTrainedModels } from "../api/use-get-models";
 import { ActiveTool } from "@/features/designs/types";
 import { cn } from "@/lib/utils";
 import { ToolSidebarHeader } from "./tool-sidebar-header";
@@ -29,23 +7,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToolSidebarClose } from "./tool-sidebar-close";
 import { KidsStoryForm } from "./kids-story";
 import { GrownUpStoryForm } from "./grown-up-story";
-
-const kidsStorySchema = z.object({
-  model: z.string(),
-  prompt: z.string().min(10, "Prompt must be at least 10 characters"),
-  ageGroup: z.enum(["3-5", "6-8", "9-12"]),
-  genre: z.enum(["adventure", "fantasy", "educational", "bedtime"]),
-});
-
-const grownUpsStorySchema = z.object({
-  model: z.string(),
-  prompt: z.string().min(10, "Prompt must be at least 10 characters"),
-  genre: z.enum(["fiction", "non-fiction", "mystery", "romance", "thriller"]),
-  tone: z.enum(["casual", "formal", "humorous", "serious"]),
-});
-
-type KidsStoryForm = z.infer<typeof kidsStorySchema>;
-type GrownUpsStoryForm = z.infer<typeof grownUpsStorySchema>;
 
 interface GenerateStoryProps {
   designId: string;
@@ -62,10 +23,6 @@ export const GenerateStory = ({
     onChangeActiveTool("select");
   };
   const [activeTab, setActiveTab] = useState<"kids" | "grown-ups">("kids");
-  const { data } = useGetTrainedModels();
-
-  const trainedModels = data?.pages.flatMap((page) => page.models) ?? [];
-  // const hasTrainedModels = trainedModels.length > 0;
 
   return (
     <aside

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { Heart, Sun, Cloud, Stars, Music } from "lucide-react";
+import { Sun, Cloud, Stars, Music } from "lucide-react";
 import type { fieldData } from "../../types";
 
 interface MoodOption {

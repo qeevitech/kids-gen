@@ -80,11 +80,6 @@ const listItem = {
   gap: "8px",
 };
 
-const link = {
-  color: "#2563eb",
-  textDecoration: "underline",
-};
-
 const button = {
   backgroundColor: "#111827",
   borderRadius: "6px",
@@ -122,13 +117,6 @@ const socialIcon = {
   textDecoration: "none",
 };
 
-const footerText = {
-  fontSize: "12px",
-  color: "#6b7280",
-  textAlign: "center" as const,
-  margin: "8px 0",
-};
-
 const footerAddress = {
   fontSize: "12px",
   color: "#6b7280",
@@ -158,7 +146,6 @@ interface TrainingCompletedEmailProps {
 export const TrainingCompletedEmail = ({
   userName = "",
   modelName,
-  modelId,
   dashboardUrl,
 }: TrainingCompletedEmailProps) => {
   return (
@@ -191,12 +178,12 @@ export const TrainingCompletedEmail = ({
           {/* Welcome Message */}
           <Text style={paragraph}>Hey {userName},</Text>
           <Text style={paragraph}>
-            Great news! Your AI model "{modelName}" has been successfully
-            trained and is now ready to use.
+            Great news! Your AI model &ldquo;{modelName}&ldquo; has been
+            successfully trained and is now ready to use.
           </Text>
 
           {/* Resources List */}
-          <Text style={paragraph}>Here's what you can do next:</Text>
+          <Text style={paragraph}>Here&apos;s what you can do next:</Text>
           <ul style={list}>
             <li style={listItem}>
               • View your model details and start generating images
@@ -228,7 +215,7 @@ export const TrainingCompletedEmail = ({
           </Text> */}
 
           <Text style={paragraph}>
-            If you have any questions or need assistance, don't hesitate to
+            If you have any questions or need assistance, don&apos;t hesitate to
             reach out to our support team.
           </Text>
         </Container>

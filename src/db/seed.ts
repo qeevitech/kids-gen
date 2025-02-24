@@ -1,10 +1,8 @@
 import { drizzle } from "drizzle-orm/neon-http";
-import { Pool } from "pg";
-import { templates, credits } from "@/db/schema";
+import { credits } from "@/db/schema";
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./.env.local" });
 
-import { defaultTemplates } from "./seed/templates";
 import { neon } from "@neondatabase/serverless";
 
 async function main() {

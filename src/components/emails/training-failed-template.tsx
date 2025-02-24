@@ -80,11 +80,6 @@ const listItem = {
   gap: "8px",
 };
 
-const link = {
-  color: "#2563eb",
-  textDecoration: "underline",
-};
-
 const button = {
   backgroundColor: "#111827",
   borderRadius: "6px",
@@ -120,13 +115,6 @@ const socialIcon = {
   borderRadius: "50%",
   color: "#6b7280",
   textDecoration: "none",
-};
-
-const footerText = {
-  fontSize: "12px",
-  color: "#6b7280",
-  textAlign: "center" as const,
-  margin: "8px 0",
 };
 
 const footerAddress = {
@@ -191,8 +179,8 @@ export const TrainingFailedEmail = ({
           {/* Message Content */}
           <Text style={paragraph}>Hey {userName},</Text>
           <Text style={paragraph}>
-            We're sorry, but the training process for your AI model "{modelName}
-            " has failed to complete successfully.
+            We&apos;re sorry, but the training process for your AI model &ldquo;
+            {modelName}&ldquo; has failed to complete successfully.
           </Text>
 
           <Text style={paragraph}>
@@ -238,7 +226,7 @@ export const TrainingFailedEmail = ({
           </Section>
 
           <Text style={paragraph}>
-            Our support team is here to help you resolve any issues. Don't
+            Our support team is here to help you resolve any issues. Don&apos;t
             hesitate to reach out if you need assistance understanding the error
             or starting a new training session.
           </Text>

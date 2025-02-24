@@ -12,10 +12,11 @@ type RequestType = InferRequestType<typeof client.api.templates.$get>["query"];
 export const useGetTemplates = (apiQuery: RequestType) => {
   return useQuery({
     queryKey: [
-      "story-templates",
+      "templates",
       {
         page: apiQuery.page,
         limit: apiQuery.limit,
+        category: apiQuery.category,
       },
     ],
     queryFn: async () => {

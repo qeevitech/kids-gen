@@ -3,8 +3,6 @@
 import { TrainedModels } from "@/features/designs/components/trained-models";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import TrainModelForm from "@/features/designs/components/train-model-form";
 
 export default function MyModelsPage() {
   return (

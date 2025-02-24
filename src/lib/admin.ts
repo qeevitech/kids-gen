@@ -1,15 +1,8 @@
 import { stripe } from "@/lib/stripe/config";
 import { db } from "@/db/drizzle";
-import {
-  products,
-  prices,
-  type Price,
-  subscriptions,
-  credits,
-} from "@/db/schema";
+import { products, prices, subscriptions, credits } from "@/db/schema";
 import Stripe from "stripe";
 import { eq } from "drizzle-orm";
-import type { Stripe as StripeType } from "stripe";
 
 const TRIAL_PERIOD_DAYS = 0;
 
@@ -131,7 +124,6 @@ export async function manageSubscriptionStatusChange(
   subscriptionId: string,
   customerId: string,
   metadata: Record<string, string>,
-  createAction = false,
 ) {
   try {
     const subscription = await stripe.subscriptions.retrieve(subscriptionId, {

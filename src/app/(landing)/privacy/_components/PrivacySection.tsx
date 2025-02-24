@@ -10,26 +10,26 @@ export function PrivacySection() {
           <p className="text-gray-600">
             This Policy defines the scope of privacy and degree of
             confidentiality protecting the information provided by users during
-            registration and normal use of kidbooks.fun ("Site"), KidBooks's
-            services, programs and facilities. At any time, users can, at their
-            discretion, allow or forbid collection and use of their personal
-            information.
+            registration and normal use of kidbooks.fun (&ldquo;Site&ldquo;),
+            KidBooks&apos;s services, programs and facilities. At any time,
+            users can, at their discretion, allow or forbid collection and use
+            of their personal information.
           </p>
 
           <p className="mt-6 text-gray-600">
             This Site is owned and operated by KidBooks Technologies Inc., a US
             company, and its affiliates (doing business as and collectively
-            referred to as "KidBooks"). By using the Site, user provides his/her
-            consent that KidBooks has the authority to collect, use and disclose
-            the user's personal information according to the rules of this
-            Policy.
+            referred to as &ldquo;KidBooks&ldquo;). By using the Site, user
+            provides his/her consent that KidBooks has the authority to collect,
+            use and disclose the user&apos;s personal information according to
+            the rules of this Policy.
           </p>
 
           <p className="mt-6 text-gray-600">
             KidBooks proclaims and accepts its responsibility to protect the
-            user's personal information. This document contains the rules upon
-            which such information is collected and used, and also the reasons
-            for disclosure of such information. These rules apply to any
+            user&apos;s personal information. This document contains the rules
+            upon which such information is collected and used, and also the
+            reasons for disclosure of such information. These rules apply to any
             personal information collected by KidBooks.
           </p>
 
@@ -45,7 +45,8 @@ export function PrivacySection() {
             collect information about the individual web pages or products that
             you view, what websites or search terms referred you to the Site,
             and information about how you interact with the Site. We refer to
-            this automatically-collected information as "Device Information."
+            this automatically-collected information as &ldquo;Device
+            Information.&ldquo;
           </p>
 
           <p className="mt-6 text-gray-600">

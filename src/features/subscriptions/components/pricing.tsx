@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -9,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Product, Price, Subscription } from "@/db/schema";
+import type { Product, Price } from "@/db/schema";
 import { SubscriptionWithProduct } from "../types";
 import { useCheckout } from "../api/use-checkout";
 import { useBilling } from "@/features/subscriptions/api/use-billing";
@@ -116,8 +115,7 @@ export function Pricing({
   const [billingInterval, setBillingInterval] = useState<"month" | "year">(
     "month",
   );
-  const router = useRouter();
-  const currentPath = usePathname();
+
   const checkout = useCheckout();
   const billing = useBilling();
 

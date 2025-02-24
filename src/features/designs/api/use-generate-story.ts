@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { client } from "@/lib/hono";
-import { useRouter } from "next/navigation";
 import { useEditorsStore } from "@/features/designs/stores/use-editors-store";
 
 interface GenerateStoryInput {
@@ -34,7 +33,6 @@ interface GenerateStoryInput {
 export const useGenerateStory = () => {
   const queryClient = useQueryClient();
   const setIsGenerating = useEditorsStore((state) => state.setIsGenerating);
-  const router = useRouter();
 
   return useMutation({
     mutationFn: async (data: GenerateStoryInput) => {

@@ -53,7 +53,7 @@ export const SignInCard = () => {
             />
             <h1 className="text-3xl font-bold">Sign in</h1>
             <p className="mt-2 text-sm text-gray-600">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/sign-up"
                 className="text-brand-primary hover:underline"

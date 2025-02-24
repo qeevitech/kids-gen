@@ -4,7 +4,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { Mail, MessageSquare, Phone } from "lucide-react";
+import { Mail } from "lucide-react";
 
 import {
   Form,
@@ -54,6 +54,7 @@ export function ContactSection() {
       toast.success("Message sent successfully!");
       form.reset();
     } catch (error) {
+      console.error(error);
       toast.error("Something went wrong. Please try again.");
     }
   }
@@ -65,8 +66,8 @@ export function ContactSection() {
           Get in Touch
         </h2>
         <p className="mt-6 text-lg leading-8 text-gray-600">
-          Have questions? We'd love to hear from you. Send us a message and
-          we'll respond as soon as possible.
+          Have questions? We&apos;d love to hear from you. Send us a message and
+          we&apos;ll respond as soon as possible.
         </p>
       </div>
 

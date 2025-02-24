@@ -11,7 +11,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useGetTrainedModels } from "../api/use-get-models";
-import { formatDistance } from "date-fns";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,17 +44,18 @@ export const TrainedModels = () => {
     );
   }
 
-  const models = data?.pages.flatMap((page) => page.models) ?? [];
+  const models = data?.pages.flatMap((page) => page.data) ?? [];
 
   if (!models.length) {
     return (
       <div className="flex h-[200px] items-center justify-center text-center">
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
-            You haven't trained any models yet
+            You haven&apos;t trained any models yet
           </p>
           <p className="text-xs text-muted-foreground">
-            Train your first model using the form in the "Train New" tab
+            Train your first model using the form in the &ldquo;Train New&ldquo;
+            tab
           </p>
         </div>
       </div>
@@ -104,7 +104,7 @@ export const TrainedModels = () => {
               {/* {formatDistance(new Date(model.created_at), new Date(), {
                 addSuffix: true,
               })} */}
-              Created {new Date(model.createdAt).toLocaleDateString()}
+              Created {new Date(model.createdAt!).toLocaleDateString()}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 pt-0">

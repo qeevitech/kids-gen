@@ -13,7 +13,6 @@ import StoryLength from "./kids-form/StoryLength";
 import StoryProtagonist from "./kids-form/StoryProtagonist";
 import { Template } from "@/types";
 
-import { useRouter } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -29,11 +28,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { useGetTrainedModels } from "../api/use-get-models";
-import { useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
 import { useGetTemplates } from "../api/use-get-templates";
 import { useGenerateStory } from "../api/use-generate-story";
 import { TemplateSelector } from "./template-selector";
@@ -122,9 +116,9 @@ export function KidsStoryForm({ designId }: { designId: string }) {
     isLoading: templatesLoading,
     isError: templatesError,
   } = useGetTemplates({ page: "1", limit: "4", category: "kids" });
-  const { data: modelsData } = useGetTrainedModels();
+  const { data: modelsData } = useGetTrainedModels(50);
 
-  const trainedModels = modelsData?.pages.flatMap((page) => page.models) ?? [];
+  const trainedModels = modelsData?.pages.flatMap((page) => page.data) ?? [];
   const hasTrainedModels = trainedModels.length > 0;
   const templates = (templatesData as Template[]) ?? [];
 
@@ -139,8 +133,11 @@ export function KidsStoryForm({ designId }: { designId: string }) {
       ...data,
       designId,
       gender:
-        trainedModels.find((model) => model.id === data.modelId)?.gender ||
-        "man",
+        (trainedModels.find((model) => model.id === data.modelId)?.gender as
+          | "man"
+          | "women"
+          | "boy"
+          | "girl") || "man",
       modelName,
       pageCount: data.length === "Short" ? 3 : data.length === "Medium" ? 5 : 7,
     });

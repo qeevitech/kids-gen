@@ -9,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -27,6 +28,11 @@ export const UserButton = () => {
 
   const name = session.data?.user?.name ?? "U";
   const imageUrl = session.data?.user?.image;
+  const email = session.data?.user?.email;
+
+  const signOutUser = async () => {
+    await signOut({ callbackUrl: "/" });
+  };
 
   return (
     <DropdownMenu modal={false}>
@@ -46,15 +52,16 @@ export const UserButton = () => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-60">
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">{name}</p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {email}
+            </p>
+          </div>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="h-10"
-          onClick={() =>
-            signOut({
-              callbackUrl: "/",
-            })
-          }
-        >
+        <DropdownMenuItem className="h-10" onClick={signOutUser}>
           <LogOut className="mr-2 size-4" />
           Log out
         </DropdownMenuItem>
