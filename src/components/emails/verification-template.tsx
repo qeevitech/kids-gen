@@ -12,7 +12,10 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-// Style declarations
+interface VerificationEmailProps {
+  confirmLink: string;
+}
+
 const main = {
   backgroundColor: "#f8fafc",
   fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
@@ -27,6 +30,11 @@ const container = {
   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
 };
 
+const header = {
+  textAlign: "center" as const,
+  padding: "20px 0",
+};
+
 const logo = {
   width: "80px",
   height: "auto",
@@ -34,63 +42,50 @@ const logo = {
   marginBottom: "16px",
 };
 
-const tagline = {
+const heading = {
   fontSize: "24px",
-  lineHeight: "1.4",
-  color: "#111827",
-  marginBottom: "24px",
-  fontWeight: "600",
-};
-
-const imageContainer = {
-  backgroundColor: "#000000",
-  borderRadius: "8px",
-  padding: "0",
-  marginBottom: "24px",
+  lineHeight: "1.3",
+  fontWeight: "700",
+  color: "#1a1a1a",
+  margin: "0 0 24px",
   textAlign: "center" as const,
-  overflow: "hidden",
 };
 
-const brandImage = {
-  width: "100%",
-  height: "auto",
-  display: "block",
-  margin: "0",
+const section = {
+  backgroundColor: "#f9fafb",
+  borderRadius: "8px",
+  padding: "24px",
+  marginBottom: "24px",
 };
 
 const paragraph = {
   fontSize: "16px",
-  lineHeight: "1.6",
+  lineHeight: "1.5",
   color: "#4b5563",
   margin: "0 0 16px",
 };
 
-const list = {
-  margin: "16px 0",
-  padding: "0",
-  listStyle: "none",
-};
-
-const listItem = {
-  fontSize: "16px",
-  lineHeight: "2",
-  color: "#4b5563",
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-};
-
 const button = {
-  backgroundColor: "#111827",
-  borderRadius: "6px",
-  color: "#ffffff",
+  backgroundColor: "#7c3aed",
+  borderRadius: "8px",
+  color: "#fff",
   fontSize: "16px",
   fontWeight: "600",
   textDecoration: "none",
   textAlign: "center" as const,
-  display: "inline-block",
+  display: "block",
   padding: "12px 24px",
-  margin: "24px 0",
+  margin: "32px auto",
+  maxWidth: "240px",
+  transition: "background-color 0.2s ease-in-out",
+};
+
+const footerText = {
+  fontSize: "14px",
+  lineHeight: "1.5",
+  color: "#6b7280",
+  textAlign: "center" as const,
+  margin: "0 0 8px",
 };
 
 const footer = {
@@ -136,26 +131,13 @@ const footerLink = {
   textDecoration: "underline",
 };
 
-interface TrainingCompletedEmailProps {
-  userName?: string;
-  modelName: string;
-  modelId: string;
-  dashboardUrl: string;
-}
-
-export const TrainingCompletedEmail = ({
-  userName = "",
-  modelName,
-  dashboardUrl,
-}: TrainingCompletedEmailProps) => {
+export const VerificationEmail = ({ confirmLink }: VerificationEmailProps) => {
   return (
     <Html>
       <Head />
-      <Preview>Your AI Model Training is Complete! 🎉</Preview>
+      <Preview>Verify your email to start creating magical stories! ✨</Preview>
       <Body style={main}>
-        {/* Main Content Container */}
         <Container style={container}>
-          {/* Logo and Tagline */}
           <Img
             src="https://cdn.kidbooks.fun/logo.png"
             width="200"
@@ -163,63 +145,51 @@ export const TrainingCompletedEmail = ({
             alt="Logo"
             style={logo}
           />
-          <Text style={tagline}>Your AI Model Training is Complete! 🎉</Text>
+          <Text style={heading}>Welcome to KidBooks! 🎉</Text>
 
-          {/* Brand Image in Dark Container */}
-          <Section style={imageContainer}>
-            <Img
-              src={`https://cdn.kidbooks.fun/email_banner.png`}
-              alt="Brand"
-              width="600"
-              style={brandImage}
-            />
-          </Section>
+          <Section style={section}>
+            <Text style={paragraph}>
+              You're just one step away from unleashing your creativity! Please
+              verify your email address to start creating amazing stories.
+            </Text>
 
-          {/* Welcome Message */}
-          <Text style={paragraph}>Hey {userName},</Text>
-          <Text style={paragraph}>
-            Great news! Your AI model &ldquo;{modelName}&ldquo; has been
-            successfully trained and is now ready to use.
-          </Text>
-
-          {/* Resources List */}
-          <Text style={paragraph}>Here&apos;s what you can do next:</Text>
-          <ul style={list}>
-            <li style={listItem}>
-              • View your model details and start generating images
-            </li>
-            <li style={listItem}>• Share your model with your team members</li>
-            <li style={listItem}>
-              • Create variations using different prompts
-            </li>
-          </ul>
-
-          {/* Action Button */}
-          <Section style={{ textAlign: "center" as const }}>
-            <Button style={button} href={dashboardUrl}>
-              View Your Model
+            <Button style={button} href={confirmLink}>
+              Verify Email Address
             </Button>
+
+            <Text style={paragraph}>
+              With KidBooks, you'll get:
+              <br />• Free story generations every month
+              <br />• Access to basic templates and tools
+              <br />• Ability to create and share your stories
+              <br />• Option to train custom AI models
+            </Text>
           </Section>
 
-          {/* <Text style={paragraph}>
-            Model ID:{" "}
-            <code
-              style={{
-                backgroundColor: "#f3f4f6",
-                padding: "2px 4px",
-                borderRadius: "4px",
-              }}
-            >
-              {modelId}
-            </code>
-          </Text> */}
-
-          <Text style={paragraph}>
-            If you have any questions or need assistance, don&apos;t hesitate to
-            reach out to our support team.
+          <Text style={footerText}>
+            This verification link will expire in 1 hour. If you need a new
+            verification link, please sign in again to receive a new one.
           </Text>
-        </Container>
 
+          <Text style={footerText}>
+            If you didn't create an account with KidBooks, you can safely ignore
+            this email.
+          </Text>
+
+          <Section style={footer}>
+            <Text style={footerText}>
+              If the button doesn't work, copy and paste this link:
+            </Text>
+            <Text style={{ ...footerText, wordBreak: "break-all" }}>
+              <Link
+                href={confirmLink}
+                style={{ color: "#7c3aed", textDecoration: "underline" }}
+              >
+                {confirmLink}
+              </Link>
+            </Text>
+          </Section>
+        </Container>
         {/* Footer Outside Container */}
         <Container>
           <Section style={footer}>
@@ -269,5 +239,4 @@ export const TrainingCompletedEmail = ({
     </Html>
   );
 };
-
-export default TrainingCompletedEmail;
+export default VerificationEmail;

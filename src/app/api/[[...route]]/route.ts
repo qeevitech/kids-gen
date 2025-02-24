@@ -15,7 +15,7 @@ import subscriptions from "./subscriptions";
 import authConfig from "@/auth.config";
 
 // Revert to "edge" if planning on running on the edge
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 function getAuthConfig(): AuthConfig {
   return {

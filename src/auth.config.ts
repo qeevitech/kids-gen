@@ -12,6 +12,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
 import { Adapter } from "next-auth/adapters";
+import { sendWelcomeEmail } from "./lib/mail";
 
 const CredentialsSchema = z.object({
   email: z.string().email(),
@@ -79,11 +80,7 @@ export default {
   },
   events: {
     async createUser({ user }) {
-      const params = {
-        name: user.name!,
-        email: user.email!,
-      };
-      // await sendWelcomeEmail(params); // <-- send welcome email
+      await sendWelcomeEmail(user.email!, user.name!); // <-- send welcome email
     },
   },
   callbacks: {

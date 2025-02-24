@@ -28,34 +28,18 @@ const container = {
 };
 
 const logo = {
-  width: "80px",
+  width: "120px",
   height: "auto",
   display: "block",
-  marginBottom: "16px",
+  marginBottom: "24px",
 };
 
 const tagline = {
-  fontSize: "24px",
+  fontSize: "28px",
   lineHeight: "1.4",
   color: "#111827",
   marginBottom: "24px",
   fontWeight: "600",
-};
-
-const imageContainer = {
-  backgroundColor: "#000000",
-  borderRadius: "8px",
-  padding: "0",
-  marginBottom: "24px",
-  textAlign: "center" as const,
-  overflow: "hidden",
-};
-
-const brandImage = {
-  width: "100%",
-  height: "auto",
-  display: "block",
-  margin: "0",
 };
 
 const paragraph = {
@@ -65,32 +49,49 @@ const paragraph = {
   margin: "0 0 16px",
 };
 
-const list = {
+const featureContainer = {
+  backgroundColor: "#f9fafb",
+  borderRadius: "8px",
+  padding: "24px",
+  marginBottom: "24px",
+};
+
+const featureTitle = {
+  fontSize: "18px",
+  fontWeight: "600",
+  color: "#111827",
+  marginBottom: "12px",
+};
+
+const featureList = {
   margin: "16px 0",
   padding: "0",
   listStyle: "none",
 };
 
-const listItem = {
-  fontSize: "16px",
-  lineHeight: "2",
+const featureItem = {
+  fontSize: "15px",
+  lineHeight: "1.6",
   color: "#4b5563",
   display: "flex",
   alignItems: "center",
   gap: "8px",
+  marginBottom: "12px",
+  paddingLeft: "24px",
+  position: "relative" as const,
 };
 
 const button = {
-  backgroundColor: "#111827",
-  borderRadius: "6px",
+  backgroundColor: "#7c3aed",
+  borderRadius: "8px",
   color: "#ffffff",
   fontSize: "16px",
   fontWeight: "600",
   textDecoration: "none",
   textAlign: "center" as const,
-  display: "inline-block",
+  display: "block",
   padding: "12px 24px",
-  margin: "24px 0",
+  marginTop: "32px",
 };
 
 const footer = {
@@ -135,27 +136,24 @@ const footerLink = {
   color: "#6b7280",
   textDecoration: "underline",
 };
-
-interface TrainingCompletedEmailProps {
-  userName?: string;
-  modelName: string;
-  modelId: string;
+interface WelcomeEmailProps {
+  userName: string;
   dashboardUrl: string;
 }
 
-export const TrainingCompletedEmail = ({
-  userName = "",
-  modelName,
-  dashboardUrl,
-}: TrainingCompletedEmailProps) => {
+export const WelcomeEmail = ({
+  userName = "there",
+  dashboardUrl = "https://kidbooks.fun/home",
+}: WelcomeEmailProps) => {
   return (
     <Html>
       <Head />
-      <Preview>Your AI Model Training is Complete! 🎉</Preview>
+      <Preview>
+        Welcome to KidBooks - Start Creating Magical Stories! 🌟
+      </Preview>
       <Body style={main}>
-        {/* Main Content Container */}
         <Container style={container}>
-          {/* Logo and Tagline */}
+          {/* Logo */}
           <Img
             src="https://cdn.kidbooks.fun/logo.png"
             width="200"
@@ -163,64 +161,80 @@ export const TrainingCompletedEmail = ({
             alt="Logo"
             style={logo}
           />
-          <Text style={tagline}>Your AI Model Training is Complete! 🎉</Text>
-
-          {/* Brand Image in Dark Container */}
-          <Section style={imageContainer}>
-            <Img
-              src={`https://cdn.kidbooks.fun/email_banner.png`}
-              alt="Brand"
-              width="600"
-              style={brandImage}
-            />
-          </Section>
 
           {/* Welcome Message */}
-          <Text style={paragraph}>Hey {userName},</Text>
+          <Text style={tagline}>Welcome to KidBooks, {userName}! 🎉</Text>
+
           <Text style={paragraph}>
-            Great news! Your AI model &ldquo;{modelName}&ldquo; has been
-            successfully trained and is now ready to use.
+            We're thrilled to have you join our creative storytelling community.
+            Get ready to embark on an amazing journey of story creation with
+            AI-powered tools and beautiful templates.
           </Text>
 
-          {/* Resources List */}
-          <Text style={paragraph}>Here&apos;s what you can do next:</Text>
-          <ul style={list}>
-            <li style={listItem}>
-              • View your model details and start generating images
-            </li>
-            <li style={listItem}>• Share your model with your team members</li>
-            <li style={listItem}>
-              • Create variations using different prompts
-            </li>
-          </ul>
-
-          {/* Action Button */}
-          <Section style={{ textAlign: "center" as const }}>
-            <Button style={button} href={dashboardUrl}>
-              View Your Model
-            </Button>
+          {/* Free Features */}
+          <Section style={featureContainer}>
+            <Text style={featureTitle}>Start Creating with Free Features:</Text>
+            <ul style={featureList}>
+              <li style={featureItem}>✨ 2 AI Story Generations per month</li>
+              <li style={featureItem}>📚 Access to basic story templates</li>
+              <li style={featureItem}>
+                🎨 Essential design tools and elements
+              </li>
+              <li style={featureItem}>💾 Save and export your stories</li>
+            </ul>
           </Section>
 
-          {/* <Text style={paragraph}>
-            Model ID:{" "}
-            <code
-              style={{
-                backgroundColor: "#f3f4f6",
-                padding: "2px 4px",
-                borderRadius: "4px",
-              }}
-            >
-              {modelId}
-            </code>
-          </Text> */}
+          {/* Premium Features */}
+          <Section style={featureContainer}>
+            <Text style={featureTitle}>Unlock Premium Features:</Text>
+            <ul style={featureList}>
+              <li style={featureItem}>🤖 Train custom AI models</li>
+              <li style={featureItem}>🎯 Unlimited story generations</li>
+              <li style={featureItem}>🎨 Premium templates for all ages</li>
+              <li style={featureItem}>✨ Advanced customization tools</li>
+            </ul>
+          </Section>
 
+          {/* Getting Started */}
           <Text style={paragraph}>
-            If you have any questions or need assistance, don&apos;t hesitate to
-            reach out to our support team.
+            Ready to create your first story? We've made it super easy to get
+            started:
           </Text>
-        </Container>
+          <ul style={featureList}>
+            <li style={featureItem}>
+              1. Choose a template or start from scratch
+            </li>
+            <li style={featureItem}>2. Customize characters and settings</li>
+            <li style={featureItem}>3. Generate AI-powered content</li>
+            <li style={featureItem}>4. Share your magical creation!</li>
+          </ul>
 
-        {/* Footer Outside Container */}
+          {/* CTA Button */}
+          <Button style={button} href={dashboardUrl}>
+            Start Creating Your Story
+          </Button>
+
+          {/* Footer */}
+          <Section style={footer}>
+            <Text style={{ ...paragraph, fontSize: "14px", color: "#6b7280" }}>
+              Need help getting started? Check out our{" "}
+              <Link
+                href="https://kidbooks.fun/tutorials"
+                style={{ color: "#7c3aed" }}
+              >
+                tutorials
+              </Link>{" "}
+              or reach out to our{" "}
+              <Link
+                href="mailto:support@kidbooks.fun"
+                style={{ color: "#7c3aed" }}
+              >
+                support team
+              </Link>
+              .
+            </Text>
+          </Section>
+        </Container>
         <Container>
           <Section style={footer}>
             <Text style={{ ...paragraph, color: "#6b7280" }}>
@@ -270,4 +284,4 @@ export const TrainingCompletedEmail = ({
   );
 };
 
-export default TrainingCompletedEmail;
+export default WelcomeEmail;
